@@ -1,5 +1,6 @@
 import Head from "next/head";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import clientPromise from "../lib/mongodb";
 
 // Define the structure of an article and the props
 type Article = {
@@ -13,15 +14,21 @@ type Props = {
   articles: Article[];
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   try {
-    const articlesResponse = await fetch("http://localhost:3000/api/articles");
-    const articles: Article[] = await articlesResponse.json();
+    const client = await clientPromise;
+    const db = client.db("content");
+
+    const articles = await db
+      .collection("articles")
+      .find({})
+      .limit(20)
+      .toArray();
 
     return {
       props: {
         isConnected: true,
-        articles,
+        articles: JSON.parse(JSON.stringify(articles)),
       },
     };
   } catch (e) {
