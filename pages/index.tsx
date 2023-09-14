@@ -14,7 +14,10 @@ type Props = {
   articles: Article[];
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps<{
+  isConnected: boolean;
+  articles: Article[];
+}> = async () => {
   try {
     const client = await clientPromise;
     const db = client.db("content");
@@ -45,7 +48,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
 export default function Home({
   isConnected,
   articles,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: {
+  isConnected: boolean;
+  articles: Article[];
+}) {
   return (
     <div className="container">
       <Head>
