@@ -6,6 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "gulp": "^4.0.2",
     "mongod": "^2.0.0",
     "mongodb": "^4.17.1",
     "next": "latest",
