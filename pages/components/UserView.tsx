@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { useTable, Column } from "react-table";
+import styles from "./styling/UserView.module.css";
 
 type Article = {
   _id: string;
   title: string;
   author: string;
   description: string;
+  date_published: string;
   isbn: string;
+  result: string;
+  research_type: string;
+  journal: string;
   SE_methods: string[];
   claims: string[];
 };
@@ -20,9 +25,39 @@ function UserView({ articles }: Props) {
   const columns = React.useMemo(
     () =>
       [
-        { Header: "Title", accessor: "title" },
-        { Header: "Author", accessor: "author" },
+        {
+          Header: "Title",
+          accessor: "title",
+          Cell: ({ cell: { value } }) => (
+            <div style={{ width: "150px" }}>{value}</div>
+          ),
+        },
+        { Header: "Author", accessor: "author", width: 150 },
+        {
+          Header: "Date Published",
+          accessor: "date_published",
+          Cell: ({ value }: { value: string }) => (
+            <span>{new Date(value).toISOString().split("T")[0]}</span>
+          ),
+        },
         { Header: "ISBN", accessor: "isbn" },
+        { Header: "Research Type", accessor: "research_type" },
+        { Header: "Journal", accessor: "journal" },
+
+        {
+          Header: "SE Methods",
+          accessor: "SE_methods",
+          Cell: ({ value }: { value: string[] | undefined }) => (
+            <span>{(value || []).join(", ")}</span>
+          ),
+        },
+        {
+          Header: "Number of Claims",
+          accessor: "claims",
+          Cell: ({ value }: { value: string[] | undefined }) => (
+            <span>{value ? value.length : 0}</span>
+          ),
+        },
       ] as Column<Article>[],
     []
   );
@@ -37,12 +72,17 @@ function UserView({ articles }: Props) {
     useTable({ columns: columns as Column<Article>[], data: articles });
 
   return (
-    <table {...getTableProps()}>
+    <table {...getTableProps()} className={styles.table}>
       <thead>
         {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
+          <tr
+            {...headerGroup.getHeaderGroupProps()}
+            className={styles.headerRow}
+          >
             {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              <th {...column.getHeaderProps()} className={styles.header}>
+                {column.render("Header")}
+              </th>
             ))}
           </tr>
         ))}
@@ -52,18 +92,21 @@ function UserView({ articles }: Props) {
           prepareRow(row);
           return (
             <React.Fragment key={row.id}>
-              <tr {...row.getRowProps()}>
+              <tr {...row.getRowProps()} className={styles.row}>
                 {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  <td {...cell.getCellProps()} className={styles.tableData}>
+                    {cell.render("Cell")}
+                  </td>
                 ))}
-                <td>
-                  <button onClick={() => toggleRow(row.id)}>^</button>
+                <td className={styles.tableData}>
+                  <button onClick={() => toggleRow(row.id)}>Show claims</button>
                 </td>
               </tr>
               {expandedRow === row.id && (
                 <tr>
                   <td colSpan={100}></td>
                   <ul>
+                    <h3>Claims:</h3>
                     {row.original.claims.map((claim, index) => (
                       <li key={index}>{claim}</li>
                     ))}

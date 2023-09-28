@@ -54,32 +54,42 @@ export default function Home({
     "user" | "moderator" | "analyst"
   >("user");
 
+  const [showProfileOptions, setShowProfileOptions] = useState(false);
+
   return (
     <div className="container">
       <Head>
         <title>SPEED</title>
         <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap"
+        />
       </Head>
 
-      <header>
-        <nav>
-          <ul>
-            <li>
-              <button onClick={() => setSelectedTab("user")}>User View</button>
-            </li>
-            <li>
-              <button onClick={() => setSelectedTab("moderator")}>
-                Moderator View
-              </button>
-            </li>
-            <li>
-              <button onClick={() => setSelectedTab("analyst")}>
-                Analyst View
-              </button>
-            </li>
-          </ul>
-          <div>SPEED</div>
-        </nav>
+      <header className="header">
+        <div className="logo">SPEED</div>
+        <div className="controls">
+          <button>Submit an Article</button>
+          <div className="profile">
+            <button onClick={() => setShowProfileOptions(!showProfileOptions)}>
+              Profile
+            </button>
+            {showProfileOptions && (
+              <div className="profile-options">
+                <button onClick={() => setSelectedTab("user")}>
+                  User View
+                </button>
+                <button onClick={() => setSelectedTab("moderator")}>
+                  Moderator View
+                </button>
+                <button onClick={() => setSelectedTab("analyst")}>
+                  Analyst View
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </header>
 
       <main>
@@ -93,6 +103,52 @@ export default function Home({
       </main>
 
       <style jsx>{`
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: lightblue;
+          padding: 1rem 2rem;
+          width: 100%;
+        }
+
+        .logo {
+          font-family: "Open Sans", sans-serif;
+          font-size: 2rem;
+        }
+
+        .controls {
+          display: flex;
+          gap: 1rem;
+        }
+
+        .profile {
+          position: relative;
+        }
+
+        .profile-options {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background-color: white;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          overflow: hidden;
+        }
+
+        .profile-options button {
+          background-color: white;
+          padding: 0.5rem 1rem;
+          cursor: pointer;
+          border: none;
+          width: 100%;
+          text-align: left;
+        }
+
+        .profile-options button:hover {
+          background-color: #f0f0f0;
+        }
+
         .container {
           min-height: 100vh;
           padding: 0 0.5rem;
