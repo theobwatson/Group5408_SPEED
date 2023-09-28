@@ -23,20 +23,6 @@ function UserView({ articles }: Props) {
         { Header: "Title", accessor: "title" },
         { Header: "Author", accessor: "author" },
         { Header: "ISBN", accessor: "isbn" },
-        {
-          Header: "SE Methods",
-          accessor: "SE_methods",
-          Cell: ({ value }: { value: string[] | undefined }) => (
-            <span>{(value || []).join(", ")}</span>
-          ),
-        },
-        {
-          Header: "Claims",
-          accessor: "claims",
-          Cell: ({ value }: { value: string[] }) => (
-            <span>{value.join(", ")}</span>
-          ),
-        },
       ] as Column<Article>[],
     []
   );
