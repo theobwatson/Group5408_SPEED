@@ -1,13 +1,43 @@
 import React, { useState } from "react";
-import { useTable } from "react-table";
+import { useTable, Column } from "react-table";
 
-function UserView({ articles }) {
+type Article = {
+  _id: string;
+  title: string;
+  author: string;
+  description: string;
+  isbn: string;
+  SE_methods: string[];
+  claims: string[];
+};
+
+type Props = {
+  articles: Article[];
+};
+
+function UserView({ articles }: Props) {
   // Construct columns for react-table
   const columns = React.useMemo(
-    () => [
-      { Header: "Title", accessor: "title" },
-      { Header: "Author", accessor: "author" },
-    ],
+    () =>
+      [
+        { Header: "Title", accessor: "title" },
+        { Header: "Author", accessor: "author" },
+        { Header: "ISBN", accessor: "isbn" },
+        {
+          Header: "SE Methods",
+          accessor: "SE_methods",
+          Cell: ({ value }: { value: string[] | undefined }) => (
+            <span>{(value || []).join(", ")}</span>
+          ),
+        },
+        {
+          Header: "Claims",
+          accessor: "claims",
+          Cell: ({ value }: { value: string[] }) => (
+            <span>{value.join(", ")}</span>
+          ),
+        },
+      ] as Column<Article>[],
     []
   );
 
@@ -18,7 +48,7 @@ function UserView({ articles }) {
 
   // Initialize the table with columns and data
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: articles });
+    useTable({ columns: columns as Column<Article>[], data: articles });
 
   return (
     <table {...getTableProps()}>
@@ -47,6 +77,11 @@ function UserView({ articles }) {
               {expandedRow === row.id && (
                 <tr>
                   <td colSpan={100}></td>
+                  <ul>
+                    {row.original.claims.map((claim, index) => (
+                      <li key={index}>{claim}</li>
+                    ))}
+                  </ul>
                 </tr>
               )}
             </React.Fragment>

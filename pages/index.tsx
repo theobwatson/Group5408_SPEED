@@ -4,8 +4,8 @@ import { useState } from "react";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import clientPromise from "../lib/mongodb";
 import UserView from "./components/UserView";
-import AnalystView from "./AnalystView";
-import ModeratorView from "./ModeratorView";
+import AnalystView from "./components/AnalystView";
+import ModeratorView from "./components/ModeratorView";
 
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
