@@ -1,57 +1,59 @@
+// Importing necessary libraries and components
 import Head from "next/head";
+import { useState } from "react";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import clientPromise from "../lib/mongodb";
+import UserView from "./components/UserView";
+import AnalystView from "./AnalystView";
+import ModeratorView from "./ModeratorView";
 
-// Define the structure of an article and the props
-type Article = {
-  _id: string;
-  title: string;
-  description: string;
-};
-
-type Props = {
-  isConnected: boolean;
-  articles: Article[];
-};
-
-export const getServerSideProps: GetServerSideProps<{
-  isConnected: boolean;
-  articles: Article[];
-}> = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   try {
     const client = await clientPromise;
     const db = client.db("content");
 
-    const articles = await db
+    // Fetching articles for each queue
+    const userArticles = await db
       .collection("articles")
-      .find({})
-      .limit(20)
+      .find({ queue: "searcher" })
+      .toArray();
+    const analystArticles = await db
+      .collection("articles")
+      .find({ queue: "analyst" })
+      .toArray();
+    const moderatorArticles = await db
+      .collection("articles")
+      .find({ queue: "moderator" })
       .toArray();
 
     return {
       props: {
-        isConnected: true,
-        articles: JSON.parse(JSON.stringify(articles)),
+        userArticles: JSON.parse(JSON.stringify(userArticles)),
+        analystArticles: JSON.parse(JSON.stringify(analystArticles)),
+        moderatorArticles: JSON.parse(JSON.stringify(moderatorArticles)),
       },
     };
   } catch (e) {
     console.error(e);
     return {
       props: {
-        isConnected: false,
-        articles: [],
+        userArticles: [],
+        analystArticles: [],
+        moderatorArticles: [],
       },
     };
   }
 };
 
 export default function Home({
-  isConnected,
-  articles,
-}: {
-  isConnected: boolean;
-  articles: Article[];
-}) {
+  userArticles,
+  analystArticles,
+  moderatorArticles,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [selectedTab, setSelectedTab] = useState<
+    "user" | "moderator" | "analyst"
+  >("user");
+
   return (
     <div className="container">
       <Head>
@@ -59,44 +61,36 @@ export default function Home({
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header></header>
+      <header>
+        <nav>
+          <ul>
+            <li>
+              <button onClick={() => setSelectedTab("user")}>User View</button>
+            </li>
+            <li>
+              <button onClick={() => setSelectedTab("moderator")}>
+                Moderator View
+              </button>
+            </li>
+            <li>
+              <button onClick={() => setSelectedTab("analyst")}>
+                Analyst View
+              </button>
+            </li>
+          </ul>
+          <div>SPEED</div>
+        </nav>
+      </header>
 
       <main>
-        <h1 className="title">Welcome to SPEED!</h1>
-
-        {isConnected ? (
-          <>
-            <h2 className="subtitle">MongoDB Connected</h2>
-            <section>
-              <h2>Testing Articles Access:</h2>
-              <ul>
-                {articles.map((article) => (
-                  <li key={article._id}>
-                    <h3>{article.title}</h3>
-                    <p>{article.description}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          </>
-        ) : (
-          <h2 className="subtitle">
-            You are NOT connected to MongoDB. Check the <code>README.md</code>{" "}
-            for instructions.
-          </h2>
+        {selectedTab === "user" && <UserView articles={userArticles} />}
+        {selectedTab === "analyst" && (
+          <AnalystView articles={analystArticles} />
+        )}
+        {selectedTab === "moderator" && (
+          <ModeratorView articles={moderatorArticles} />
         )}
       </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
 
       <style jsx>{`
         .container {
@@ -117,30 +111,12 @@ export default function Home({
           align-items: center;
         }
 
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
+        header nav ul {
           display: flex;
-          justify-content: center;
+          gap: 10px;
+          justify-content: space-around;
           align-items: center;
         }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
         .title a {
           color: #0070f3;
           text-decoration: none;
@@ -219,10 +195,6 @@ export default function Home({
           margin: 0;
           font-size: 1.25rem;
           line-height: 1.5;
-        }
-
-        .logo {
-          height: 1em;
         }
 
         @media (max-width: 600px) {
