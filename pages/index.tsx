@@ -6,6 +6,7 @@ import clientPromise from "../lib/mongodb";
 import UserView from "./components/UserView";
 import AnalystView from "./components/AnalystView";
 import ModeratorView from "./components/ModeratorView";
+import "bootstrap/dist/css/bootstrap.css";
 
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
@@ -70,9 +71,14 @@ export default function Home({
       <header className="header">
         <div className="logo">SPEED</div>
         <div className="controls">
-          <button>Submit an Article</button>
+          <button className="btn btn-primary rounded-pill">
+            Submit an Article
+          </button>
           <div className="profile">
-            <button onClick={() => setShowProfileOptions(!showProfileOptions)}>
+            <button
+              className="btn btn-secondary rounded-pill"
+              onClick={() => setShowProfileOptions(!showProfileOptions)}
+            >
               Profile
             </button>
             {showProfileOptions && (
@@ -107,7 +113,7 @@ export default function Home({
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background-color: lightblue;
+          background-color: #263871;
           padding: 1rem 2rem;
           width: 100%;
         }
@@ -115,6 +121,7 @@ export default function Home({
         .logo {
           font-family: "Open Sans", sans-serif;
           font-size: 2rem;
+          color: #ffffff;
         }
 
         .controls {
@@ -163,8 +170,9 @@ export default function Home({
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          align-items: center;
+          justify-content: flex-start;
+          align-items: flex-start;
+          width: 100%;
         }
 
         header nav ul {
@@ -206,7 +214,6 @@ export default function Home({
 
         code {
           background: #fafafa;
-          border-radius: 5px;
           padding: 0.75rem;
           font-size: 1.1rem;
           font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
@@ -224,7 +231,6 @@ export default function Home({
         }
 
         .card {
-          margin: 1rem;
           flex-basis: 45%;
           padding: 1.5rem;
           text-align: left;
@@ -269,6 +275,7 @@ export default function Home({
           font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
             Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
             sans-serif;
+          height: 100%;
         }
 
         * {

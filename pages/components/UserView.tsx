@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTable, Column } from "react-table";
 import styles from "./styling/UserView.module.css";
+import "bootstrap/dist/css/bootstrap.css";
 
 type Article = {
   _id: string;
@@ -99,18 +100,29 @@ function UserView({ articles }: Props) {
                   </td>
                 ))}
                 <td className={styles.tableData}>
-                  <button onClick={() => toggleRow(row.id)}>Show claims</button>
+                  <button
+                    className={`btn ${
+                      expandedRow === row.id
+                        ? "btn-outline-secondary"
+                        : "btn-outline-secondary"
+                    }`}
+                    onClick={() => toggleRow(row.id)}
+                  >
+                    {expandedRow === row.id ? "Show less" : "Show more"}
+                  </button>
                 </td>
               </tr>
               {expandedRow === row.id && (
-                <tr>
-                  <td colSpan={100}></td>
-                  <ul>
-                    <h3>Claims:</h3>
-                    {row.original.claims.map((claim, index) => (
-                      <li key={index}>{claim}</li>
-                    ))}
-                  </ul>
+                <tr className={styles.expandedRow}>
+                  <td colSpan={9} className={styles.expandedCell}>
+                    {" "}
+                    <ul>
+                      <h3>Claims:</h3>
+                      {row.original.claims.map((claim, index) => (
+                        <li key={index}>{claim}</li>
+                      ))}
+                    </ul>
+                  </td>
                 </tr>
               )}
             </React.Fragment>
