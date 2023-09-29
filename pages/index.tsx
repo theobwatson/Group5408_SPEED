@@ -58,7 +58,7 @@ export default function Home({
   const [showProfileOptions, setShowProfileOptions] = useState(false);
 
   return (
-    <div className="container">
+    <div className="container-fluid">
       <Head>
         <title>SPEED</title>
         <link rel="icon" href="/favicon.ico" />
@@ -71,12 +71,12 @@ export default function Home({
       <header className="header">
         <div className="logo">SPEED</div>
         <div className="controls">
-          <button className="btn btn-primary rounded-pill">
+          <button className="btn btn-light rounded-pill">
             Submit an Article
           </button>
           <div className="profile">
             <button
-              className="btn btn-secondary rounded-pill"
+              className="btn btn-light rounded-pill"
               onClick={() => setShowProfileOptions(!showProfileOptions)}
             >
               Profile
@@ -156,13 +156,14 @@ export default function Home({
           background-color: #f0f0f0;
         }
 
-        .container {
+        .container-fluid {
           min-height: 100vh;
-          padding: 0 0.5rem;
+          padding: 0;
+          margin: 0;
           display: flex;
           flex-direction: column;
           justify-content: center;
-          align-items: center;
+          align-items: stretch;
         }
 
         main {
@@ -177,7 +178,7 @@ export default function Home({
 
         header nav ul {
           display: flex;
-          gap: 10px;
+          gap: 30px;
           justify-content: space-around;
           align-items: center;
         }
@@ -259,7 +260,7 @@ export default function Home({
           line-height: 1.5;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 1600px !important) {
           .grid {
             width: 100%;
             flex-direction: column;
@@ -270,8 +271,8 @@ export default function Home({
       <style jsx global>{`
         html,
         body {
-          padding: 0;
           margin: 0;
+          padding: 0;
           font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
             Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
             sans-serif;
