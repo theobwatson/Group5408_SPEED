@@ -2,7 +2,7 @@ import React from "react";
 import { render, waitFor, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import UserView from "../pages/components/UserView";
+import UserView from "../components/UserView";
 
 describe("UserView Component", () => {
   const mockArticles = [

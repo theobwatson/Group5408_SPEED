@@ -3,9 +3,9 @@ import Head from "next/head";
 import React, { useState } from "react";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import clientPromise from "../lib/mongodb";
-import UserView from "./components/UserView";
-import AnalystView from "./components/AnalystView";
-import ModeratorView from "./components/ModeratorView";
+import UserView from "../components/UserView";
+import AnalystView from "../components/AnalystView";
+import ModeratorView from "../components/ModeratorView";
 import "bootstrap/dist/css/bootstrap.css";
 
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -55,6 +55,8 @@ export default function Home({
     "user" | "moderator" | "analyst"
   >("user");
 
+  console.log({ userArticles, analystArticles, moderatorArticles });
+
   const [showProfileOptions, setShowProfileOptions] = useState(false);
 
   return (
@@ -99,13 +101,24 @@ export default function Home({
       </header>
 
       <main>
-        {selectedTab === "user" && <UserView articles={userArticles} />}
-        {selectedTab === "analyst" && (
-          <AnalystView articles={analystArticles} />
-        )}
-        {selectedTab === "moderator" && (
-          <ModeratorView articles={moderatorArticles} />
-        )}
+        {selectedTab === "user" &&
+          (userArticles.length > 0 ? (
+            <UserView articles={userArticles} />
+          ) : (
+            <p>No Articles Available</p>
+          ))}
+        {selectedTab === "analyst" &&
+          (analystArticles.length > 0 ? (
+            <AnalystView articles={analystArticles} />
+          ) : (
+            <p>No Articles Available for Review</p>
+          ))}
+        {selectedTab === "moderator" &&
+          (moderatorArticles.length > 0 ? (
+            <ModeratorView articles={moderatorArticles} />
+          ) : (
+            <p>No Articles Available for Review</p>
+          ))}
       </main>
 
       <style global jsx>{`
