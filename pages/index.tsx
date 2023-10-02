@@ -1,4 +1,4 @@
-// Importing necessary libraries and components
+// Necessary imports
 import Head from "next/head";
 import React, { useState } from "react";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
@@ -8,9 +8,10 @@ import AnalystView from "../components/AnalystView";
 import ModeratorView from "../components/ModeratorView";
 import "bootstrap/dist/css/bootstrap.css";
 
+// Fetching data from the server-side (MongoDB)
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
-    const client = await clientPromise;
+    const client = await clientPromise; // connect to MongoDB
     const db = client.db("content");
 
     // Fetching articles for each queue
@@ -71,8 +72,9 @@ export default function Home({
       </Head>
 
       <header className="header">
-        <div className="logo">SPEED</div>
+        <div className="logo">SPEED</div> {/* Display the logo */}
         <div className="controls">
+          {/* Controls for submitting articles and user profile */}
           <button className="btn btn-light rounded-pill">
             Submit an Article
           </button>
@@ -84,6 +86,7 @@ export default function Home({
               Profile
             </button>
             {showProfileOptions && (
+              // on button click, display user profiles
               <div className="profile-options">
                 <button onClick={() => setSelectedTab("user")}>
                   User View
@@ -101,6 +104,7 @@ export default function Home({
       </header>
 
       <main>
+        {/* Display table, with conditional rendering based on the selected view */}
         {selectedTab === "user" &&
           (userArticles.length > 0 ? (
             <UserView articles={userArticles} />
@@ -121,6 +125,7 @@ export default function Home({
           ))}
       </main>
 
+      {/* CSS styles */}
       <style global jsx>{`
         .header {
           display: flex;
@@ -281,6 +286,7 @@ export default function Home({
         }
       `}</style>
 
+      {/* Global CSS styles */}
       <style jsx global>{`
         html,
         body {
