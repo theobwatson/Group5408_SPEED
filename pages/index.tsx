@@ -1,6 +1,6 @@
 // Importing necessary libraries and components
 import Head from "next/head";
-import { useState } from "react";
+import React, { useState } from "react";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import clientPromise from "../lib/mongodb";
 import UserView from "./components/UserView";
@@ -108,7 +108,7 @@ export default function Home({
         )}
       </main>
 
-      <style jsx>{`
+      <style global jsx>{`
         .header {
           display: flex;
           justify-content: space-between;
@@ -119,7 +119,7 @@ export default function Home({
         }
 
         .logo {
-          font-family: "Open Sans", sans-serif;
+          font-family: Open Sans, sans-serif;
           font-size: 2rem;
           color: #ffffff;
         }

@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import { useTable, Column } from "react-table";
 import styles from "./styling/UserView.module.css";
+import "bootstrap/dist/css/bootstrap.css";
 
 type Article = {
   _id: string;
   title: string;
   author: string;
-  description: string;
   date_published: string;
-  isbn: string;
-  result: string;
-  research_type: string;
+  DOI: string;
   journal: string;
-  SE_methods: string[];
-  claims: string[];
+  volume: string;
+  pages: string;
 };
 
 type Props = {
@@ -40,24 +38,10 @@ function AnalystView({ articles }: Props) {
             <span>{new Date(value).toISOString().split("T")[0]}</span>
           ),
         },
-        { Header: "ISBN", accessor: "isbn" },
-        { Header: "Research Type", accessor: "research_type" },
+        { Header: "DOI", accessor: "DOI" },
         { Header: "Journal", accessor: "journal" },
-
-        {
-          Header: "SE Methods",
-          accessor: "SE_methods",
-          Cell: ({ value }: { value: string[] | undefined }) => (
-            <span>{(value || []).join(", ")}</span>
-          ),
-        },
-        {
-          Header: "Number of Claims",
-          accessor: "claims",
-          Cell: ({ value }: { value: string[] | undefined }) => (
-            <span>{value ? value.length : 0}</span>
-          ),
-        },
+        { Header: "Volume", accessor: "volume" },
+        { Header: "Pages", accessor: "pages" },
       ] as Column<Article>[],
     []
   );
@@ -99,20 +83,18 @@ function AnalystView({ articles }: Props) {
                   </td>
                 ))}
                 <td className={styles.tableData}>
-                  <button onClick={() => toggleRow(row.id)}>^</button>
+                  <button
+                    className={`btn ${
+                      expandedRow === row.id
+                        ? "btn-outline-secondary"
+                        : "btn-outline-secondary"
+                    }`}
+                    onClick={() => toggleRow(row.id)}
+                  >
+                    {expandedRow === row.id ? "Show less" : "Show more"}
+                  </button>
                 </td>
               </tr>
-              {expandedRow === row.id && (
-                <tr>
-                  <td colSpan={100}></td>
-                  <ul>
-                    <h3>Claims:</h3>
-                    {row.original.claims.map((claim, index) => (
-                      <li key={index}>{claim}</li>
-                    ))}
-                  </ul>
-                </tr>
-              )}
             </React.Fragment>
           );
         })}

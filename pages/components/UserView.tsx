@@ -9,7 +9,7 @@ type Article = {
   author: string;
   description: string;
   date_published: string;
-  doi: string;
+  DOI: string;
   result: string;
   research_type: string;
   journal: string;
@@ -41,7 +41,7 @@ function UserView({ articles }: Props) {
             <span>{new Date(value).toISOString().split("T")[0]}</span>
           ),
         },
-        { Header: "DOI", accessor: "doi" },
+        { Header: "DOI", accessor: "DOI" },
         { Header: "Research Type", accessor: "research_type" },
         { Header: "Journal", accessor: "journal" },
         { Header: "Result", accessor: "result" },
@@ -117,10 +117,14 @@ function UserView({ articles }: Props) {
                   <td colSpan={9} className={styles.expandedCell}>
                     {" "}
                     <ul>
-                      <h3>Claims:</h3>
+                      <h4>Claims:</h4>
                       {row.original.claims.map((claim, index) => (
                         <li key={index}>{claim}</li>
                       ))}
+                      <h4>Description:</h4>
+                      <p>{row.original.description}</p>
+                      <h4>Evidence Result:</h4>
+                      <p>{row.original.result}</p>
                     </ul>
                   </td>
                 </tr>
