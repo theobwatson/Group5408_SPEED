@@ -126,7 +126,7 @@ export default function Home({
       </main>
 
       {/* CSS styles */}
-      <style global jsx>{`
+      <style jsx global>{`
         .header {
           display: flex;
           justify-content: space-between;

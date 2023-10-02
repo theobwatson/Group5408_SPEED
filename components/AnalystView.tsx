@@ -1,8 +1,10 @@
+// Necessary imports
 import React, { useState } from "react";
 import { useTable, Column } from "react-table";
 import styles from "./styling/UserView.module.css";
 import "bootstrap/dist/css/bootstrap.css";
 
+// Represents article data
 type Article = {
   _id: string;
   title: string;
@@ -14,6 +16,7 @@ type Article = {
   pages: string;
 };
 
+// Props for passing in a list of articles
 type Props = {
   articles: Article[];
 };

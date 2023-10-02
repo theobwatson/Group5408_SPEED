@@ -1,8 +1,10 @@
+// Necessary imports
 import React, { useState } from "react";
 import { useTable, Column } from "react-table";
 import styles from "./styling/UserView.module.css";
 import "bootstrap/dist/css/bootstrap.css";
 
+// Represents article data
 type Article = {
   _id: string;
   title: string;
@@ -17,6 +19,7 @@ type Article = {
   claims: string[];
 };
 
+// Props for passing in a list of articles
 type Props = {
   articles: Article[];
 };
@@ -26,6 +29,7 @@ function UserView({ articles }: Props) {
   const columns = React.useMemo(
     () =>
       [
+        // Column headers
         {
           Header: "Title",
           accessor: "title",
@@ -112,6 +116,7 @@ function UserView({ articles }: Props) {
                   </button>
                 </td>
               </tr>
+              {/* Display additional information for expanded row */}
               {expandedRow === row.id && (
                 <tr className={styles.expandedRow}>
                   <td colSpan={9} className={styles.expandedCell}>
