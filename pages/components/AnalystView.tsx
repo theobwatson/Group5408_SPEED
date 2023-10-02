@@ -42,6 +42,11 @@ function AnalystView({ articles }: Props) {
         { Header: "Journal", accessor: "journal" },
         { Header: "Volume", accessor: "volume" },
         { Header: "Pages", accessor: "pages" },
+        {
+          Header: "Action",
+          id: "action",
+          Cell: () => <button>Some Action</button>,
+        } as any,
       ] as Column<Article>[],
     []
   );
