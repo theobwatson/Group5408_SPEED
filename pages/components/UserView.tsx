@@ -9,7 +9,7 @@ type Article = {
   author: string;
   description: string;
   date_published: string;
-  isbn: string;
+  doi: string;
   result: string;
   research_type: string;
   journal: string;
@@ -41,10 +41,10 @@ function UserView({ articles }: Props) {
             <span>{new Date(value).toISOString().split("T")[0]}</span>
           ),
         },
-        { Header: "ISBN", accessor: "isbn" },
+        { Header: "DOI", accessor: "doi" },
         { Header: "Research Type", accessor: "research_type" },
         { Header: "Journal", accessor: "journal" },
-
+        { Header: "Result", accessor: "result" },
         {
           Header: "SE Methods",
           accessor: "SE_methods",
