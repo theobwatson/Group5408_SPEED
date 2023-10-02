@@ -3,7 +3,6 @@ import { render, waitFor, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import UserView from "../UserView";
-import { expect } from "@jest/globals";
 
 describe("UserView Component", () => {
   const mockArticles = [

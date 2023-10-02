@@ -38,7 +38,7 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "jsdom",
+    "testEnvironment": "node",
     "testMatch": [
       "**/?(*.)+(spec|test).[jt]s?(x)"
     ],
@@ -47,6 +47,9 @@
     },
     "moduleNameMapper": {
       "\\.css$": "<rootDir>/__mocks__/styleMock.js"
-    }
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/path-to-your-setup-file/jest.setup.ts"
+    ]
   }
 }
