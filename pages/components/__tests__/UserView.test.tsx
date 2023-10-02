@@ -3,7 +3,6 @@ import { render, waitFor, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import UserView from "../UserView";
-import "@testing-library/jest-dom/extend-expect";
 
 describe("UserView Component", () => {
   const mockArticles = [
@@ -13,7 +12,7 @@ describe("UserView Component", () => {
       author: "Test Author",
       description: "Description",
       date_published: "2021-10-01T00:00:00.000Z",
-      doi: "12345",
+      DOI: "12345",
       result: "Test approve",
       research_type: "Test Type",
       journal: "Test Journal",
@@ -26,7 +25,7 @@ describe("UserView Component", () => {
       author: "Test Author 2",
       description: "Description 2",
       date_published: "2022-10-01T00:00:00.000Z",
-      doi: "123456",
+      DOI: "123456",
       result: "Test approve",
       research_type: "Test Type",
       journal: "Test Journal",
@@ -39,7 +38,7 @@ describe("UserView Component", () => {
       author: "Test Author 3",
       description: "Description 3",
       date_published: "2023-10-01T00:00:00.000Z",
-      doi: "1234567",
+      DOI: "1234567",
       result: "Test approve",
       research_type: "Test Type",
       journal: "Test Journal",
