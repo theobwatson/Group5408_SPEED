@@ -1,111 +1,187 @@
+// Necessary imports
 import Head from "next/head";
+import React, { useState } from "react";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import clientPromise from "../lib/mongodb";
+import UserView from "../components/UserView";
+import AnalystView from "../components/AnalystView";
+import ModeratorView from "../components/ModeratorView";
+import "bootstrap/dist/css/bootstrap.css";
 
-// Define the structure of an article and the props
-type Article = {
-  _id: string;
-  title: string;
-  description: string;
-};
-
-type Props = {
-  isConnected: boolean;
-  articles: Article[];
-};
-
-export const getServerSideProps: GetServerSideProps<{
-  isConnected: boolean;
-  articles: Article[];
-}> = async () => {
+// Fetching data from the server-side (MongoDB)
+export const getServerSideProps: GetServerSideProps = async () => {
   try {
-    const client = await clientPromise;
+    const client = await clientPromise; // connect to MongoDB
     const db = client.db("content");
 
-    const articles = await db
+    // Fetching articles for each queue
+    const userArticles = await db
       .collection("articles")
-      .find({})
-      .limit(20)
+      .find({ queue: "searcher" })
+      .toArray();
+    const analystArticles = await db
+      .collection("articles")
+      .find({ queue: "analyst" })
+      .toArray();
+    const moderatorArticles = await db
+      .collection("articles")
+      .find({ queue: "moderator" })
       .toArray();
 
     return {
       props: {
-        isConnected: true,
-        articles: JSON.parse(JSON.stringify(articles)),
+        userArticles: JSON.parse(JSON.stringify(userArticles)),
+        analystArticles: JSON.parse(JSON.stringify(analystArticles)),
+        moderatorArticles: JSON.parse(JSON.stringify(moderatorArticles)),
       },
     };
   } catch (e) {
     console.error(e);
     return {
       props: {
-        isConnected: false,
-        articles: [],
+        userArticles: [],
+        analystArticles: [],
+        moderatorArticles: [],
       },
     };
   }
 };
 
 export default function Home({
-  isConnected,
-  articles,
-}: {
-  isConnected: boolean;
-  articles: Article[];
-}) {
+  userArticles,
+  analystArticles,
+  moderatorArticles,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [selectedTab, setSelectedTab] = useState<
+    "user" | "moderator" | "analyst"
+  >("user");
+
+  console.log({ userArticles, analystArticles, moderatorArticles });
+
+  const [showProfileOptions, setShowProfileOptions] = useState(false);
+
   return (
-    <div className="container">
+    <div className="container-fluid">
       <Head>
         <title>SPEED</title>
         <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap"
+        />
       </Head>
 
-      <header></header>
+      <header className="header">
+        <div className="logo">SPEED</div> {/* Display the logo */}
+        <div className="controls">
+          {/* Controls for submitting articles and user profile */}
+          <button className="btn btn-light rounded-pill">
+            Submit an Article
+          </button>
+          <div className="profile">
+            <button
+              className="btn btn-light rounded-pill"
+              onClick={() => setShowProfileOptions(!showProfileOptions)}
+            >
+              Profile
+            </button>
+            {showProfileOptions && (
+              // on button click, display user profiles
+              <div className="profile-options">
+                <button onClick={() => setSelectedTab("user")}>
+                  User View
+                </button>
+                <button onClick={() => setSelectedTab("moderator")}>
+                  Moderator View
+                </button>
+                <button onClick={() => setSelectedTab("analyst")}>
+                  Analyst View
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
 
       <main>
-        <h1 className="title">Welcome to SPEED!</h1>
-
-        {isConnected ? (
-          <>
-            <h2 className="subtitle">MongoDB Connected</h2>
-            <section>
-              <h2>Testing Articles Access:</h2>
-              <ul>
-                {articles.map((article) => (
-                  <li key={article._id}>
-                    <h3>{article.title}</h3>
-                    <p>{article.description}</p>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          </>
-        ) : (
-          <h2 className="subtitle">
-            You are NOT connected to MongoDB. Check the <code>README.md</code>{" "}
-            for instructions.
-          </h2>
-        )}
+        {/* Display table, with conditional rendering based on the selected view */}
+        {selectedTab === "user" &&
+          (userArticles.length > 0 ? (
+            <UserView articles={userArticles} />
+          ) : (
+            <p>No Articles Available</p>
+          ))}
+        {selectedTab === "analyst" &&
+          (analystArticles.length > 0 ? (
+            <AnalystView articles={analystArticles} />
+          ) : (
+            <p>No Articles Available for Review</p>
+          ))}
+        {selectedTab === "moderator" &&
+          (moderatorArticles.length > 0 ? (
+            <ModeratorView articles={moderatorArticles} />
+          ) : (
+            <p>No Articles Available for Review</p>
+          ))}
       </main>
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
-        </a>
-      </footer>
+      {/* CSS styles */}
+      <style jsx global>{`
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #263871;
+          padding: 1rem 2rem;
+          width: 100%;
+        }
 
-      <style jsx>{`
-        .container {
+        .logo {
+          font-family: Open Sans, sans-serif;
+          font-size: 2rem;
+          color: #ffffff;
+        }
+
+        .controls {
+          display: flex;
+          gap: 1rem;
+        }
+
+        .profile {
+          position: relative;
+        }
+
+        .profile-options {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background-color: white;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          overflow: hidden;
+        }
+
+        .profile-options button {
+          background-color: white;
+          padding: 0.5rem 1rem;
+          cursor: pointer;
+          border: none;
+          width: 100%;
+          text-align: left;
+        }
+
+        .profile-options button:hover {
+          background-color: #f0f0f0;
+        }
+
+        .container-fluid {
           min-height: 100vh;
-          padding: 0 0.5rem;
+          padding: 0;
+          margin: 0;
           display: flex;
           flex-direction: column;
           justify-content: center;
-          align-items: center;
+          align-items: stretch;
         }
 
         main {
@@ -113,34 +189,17 @@ export default function Home({
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
+          justify-content: flex-start;
+          align-items: flex-start;
           width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
+        }
+
+        header nav ul {
           display: flex;
-          justify-content: center;
+          gap: 30px;
+          justify-content: space-around;
           align-items: center;
         }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        a {
-          color: inherit;
-          text-decoration: none;
-        }
-
         .title a {
           color: #0070f3;
           text-decoration: none;
@@ -174,7 +233,6 @@ export default function Home({
 
         code {
           background: #fafafa;
-          border-radius: 5px;
           padding: 0.75rem;
           font-size: 1.1rem;
           font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
@@ -192,7 +250,6 @@ export default function Home({
         }
 
         .card {
-          margin: 1rem;
           flex-basis: 45%;
           padding: 1.5rem;
           text-align: left;
@@ -221,11 +278,7 @@ export default function Home({
           line-height: 1.5;
         }
 
-        .logo {
-          height: 1em;
-        }
-
-        @media (max-width: 600px) {
+        @media (max-width: 1600px !important) {
           .grid {
             width: 100%;
             flex-direction: column;
@@ -233,14 +286,16 @@ export default function Home({
         }
       `}</style>
 
+      {/* Global CSS styles */}
       <style jsx global>{`
         html,
         body {
-          padding: 0;
           margin: 0;
+          padding: 0;
           font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
             Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
             sans-serif;
+          height: 100%;
         }
 
         * {
