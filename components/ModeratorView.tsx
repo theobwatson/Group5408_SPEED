@@ -14,6 +14,8 @@ type Article = {
   journal: string;
   volume: string;
   pages: string;
+  inSearchersDb: boolean;  // Indicate if article is in the searchers database
+  inRejectedDb: boolean;   // Indicate if article is in the rejected database
 };
 
 // Props for passing in a list of articles
@@ -22,6 +24,37 @@ type Props = {
 };
 
 function ModeratorView({ articles }: Props) {
+  // Sample queues (arrays) for demonstration
+  const [analysisQueue, setAnalysisQueue] = useState<Article[]>([]);
+  const [rejectedQueue, setRejectedQueue] = useState<Article[]>([]);
+
+  // Handle approve action
+  const handleApprove = (id: string) => {
+    console.log(`Article with ID ${id} approved`);
+
+    // Find the article by its ID
+    const article = articles.find(article => article._id === id);
+
+    if (article) {
+      // Add the article to the analysis queue
+      setAnalysisQueue(prevQueue => [...prevQueue, article]);
+    }
+  };
+
+  // Handle reject action
+  const handleReject = (id: string) => {
+    console.log(`Article with ID ${id} rejected`);
+
+    // Find the article by its ID
+    const article = articles.find(article => article._id === id);
+
+    if (article) {
+      // Add the article to the rejected queue
+      setRejectedQueue(prevQueue => [...prevQueue, article]);
+    }
+  };
+
+
   // Construct columns for react-table
   const columns = React.useMemo(
     () =>
@@ -46,10 +79,18 @@ function ModeratorView({ articles }: Props) {
         { Header: "Journal", accessor: "journal" },
         { Header: "Volume", accessor: "volume" },
         { Header: "Pages", accessor: "pages" },
+        { Header: "In Searchers DB", accessor: "inSearchersDb", Cell: ({ cell: { value } }) => (value ? "Yes" : "No") },
+        { Header: "In Rejected DB", accessor: "inRejectedDb", Cell: ({ cell: { value } }) => (value ? "Yes" : "No") },
         {
           Header: "Action",
           id: "action",
-          Cell: () => <button>Some Action</button>,
+          Cell: ({ row }: any) => (
+            <>
+              <button onClick={() => handleApprove(row.original._id)}>Approve</button>
+              <button onClick={() => handleReject(row.original._id)}>Reject</button>
+              
+            </>
+          ),
         } as any,
       ] as Column<Article>[],
     []
