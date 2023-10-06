@@ -1,4 +1,4 @@
-const clientPromise = require('../lib/mongodb');
+import clientPromise from '../lib/mongodb';
 
 module.exports = async (req, res) => {
     if (req.method === 'POST') {
