@@ -29,30 +29,66 @@ function ModeratorView({ articles }: Props) {
   const [rejectedQueue, setRejectedQueue] = useState<Article[]>([]);
 
   // Handle approve action
-  const handleApprove = (id: string) => {
+  const handleApprove = async (id: string) => {
     console.log(`Article with ID ${id} approved`);
-
-    // Find the article by its ID
-    const article = articles.find(article => article._id === id);
-
-    if (article) {
-      // Add the article to the analysis queue
-      setAnalysisQueue(prevQueue => [...prevQueue, article]);
+  
+    try {
+      const response = await fetch("/api/articles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, action: "approve" }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Find the article by its ID
+        const article = articles.find(article => article._id === id);
+        if (article) {
+          alert('Article approved successfully.');  // Added alert
+          // Add the article to the analysis queue
+          setAnalysisQueue(prevQueue => [...prevQueue, article]);
+        }
+      } else {
+        alert('Error approving the article: ' + data.message);  // Added alert
+        console.error("Error approving the article:", data.message);
+      }
+    } catch (error) {
+      console.error("Failed to approve the article:", error);
     }
   };
+  
 
   // Handle reject action
-  const handleReject = (id: string) => {
+  const handleReject = async (id: string) => {
     console.log(`Article with ID ${id} rejected`);
-
-    // Find the article by its ID
-    const article = articles.find(article => article._id === id);
-
-    if (article) {
-      // Add the article to the rejected queue
-      setRejectedQueue(prevQueue => [...prevQueue, article]);
+  
+    try {
+      const response = await fetch("/api/articles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, action: "reject" }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        alert('Article rejected successfully.');  // Added alert
+        // Find the article by its ID
+        const article = articles.find(article => article._id === id);
+        if (article) {
+          // Add the article to the rejected queue
+          setRejectedQueue(prevQueue => [...prevQueue, article]);
+        }
+      } else {
+        alert('Error rejecting the article: ' + data.message);  // Added alert
+        console.error("Error rejecting the article:", data.message);
+      }
+    } catch (error) {
+      console.error("Failed to reject the article:", error);
     }
   };
+  
 
 
   // Construct columns for react-table
