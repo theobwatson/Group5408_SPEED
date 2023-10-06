@@ -28,8 +28,12 @@ function ModeratorView({ articles }: Props) {
   const [analysisQueue, setAnalysisQueue] = useState<Article[]>([]);
   const [rejectedQueue, setRejectedQueue] = useState<Article[]>([]);
 
+  // Maintain a state to track if the API request is in progress
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   // Handle approve action
   const handleApprove = async (id: string) => {
+    setIsLoading(true);  // Set loading state to true when starting the request
     console.log(`Article with ID ${id} approved`);
   
     try {
@@ -56,11 +60,13 @@ function ModeratorView({ articles }: Props) {
     } catch (error) {
       console.error("Failed to approve the article:", error);
     }
+    setIsLoading(false);  // Reset loading state once request is complete
   };
   
 
   // Handle reject action
   const handleReject = async (id: string) => {
+    setIsLoading(true);  // Set loading state to true when starting the request
     console.log(`Article with ID ${id} rejected`);
   
     try {
@@ -87,6 +93,7 @@ function ModeratorView({ articles }: Props) {
     } catch (error) {
       console.error("Failed to reject the article:", error);
     }
+    setIsLoading(false);  // Reset loading state once request is complete
   };
   
 
@@ -142,6 +149,8 @@ function ModeratorView({ articles }: Props) {
     useTable({ columns: columns as Column<Article>[], data: articles });
 
   return (
+    <div>
+            {isLoading ? <div>Processing...</div> : null}
     <table {...getTableProps()} className={styles.table}>
       <thead>
         {headerGroups.map((headerGroup) => (
@@ -186,6 +195,7 @@ function ModeratorView({ articles }: Props) {
         })}
       </tbody>
     </table>
+    </div>
   );
 }
 
