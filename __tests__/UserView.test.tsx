@@ -1,6 +1,6 @@
 // Necessary imports
 import React from "react";
-import { render, waitFor, screen } from "@testing-library/react";
+import { render, waitFor, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import UserView from "../components/UserView";
@@ -90,5 +90,56 @@ describe("UserView Component", () => {
     await waitFor(() =>
       expect(screen.queryByText(/Claims:/i)).not.toBeInTheDocument()
     );
+  });
+
+  // Test-Driven Development was used here:
+  test("searches and filters articles by title", async () => {
+    render(<UserView articles={mockArticles} />);
+
+    const searchInput = screen.getByPlaceholderText("Search articles");
+    userEvent.type(searchInput, "Test Title 2");
+
+    const searchButton = screen.getByText("Search");
+    userEvent.click(searchButton);
+
+    const matchingRow = await screen.findByText("Test Title 2");
+    expect(matchingRow).toBeInTheDocument();
+
+    const nonMatchingRow1 = screen.queryByText("Test Title");
+    const nonMatchingRow2 = screen.queryByText("Test Title 3");
+    expect(nonMatchingRow1).not.toBeInTheDocument();
+    expect(nonMatchingRow2).not.toBeInTheDocument();
+  });
+
+  test("clears the search term and displays original articles", async () => {
+    render(<UserView articles={mockArticles} />);
+
+    const searchInput = screen.getByPlaceholderText("Search articles");
+    userEvent.type(searchInput, "Test Title 2");
+
+    const searchButton = screen.getByText("Search");
+    userEvent.click(searchButton);
+
+    const matchingRow = await screen.findByText("Test Title 2");
+    expect(matchingRow).toBeInTheDocument();
+
+    const clearButton = screen.getByText("Clear");
+    userEvent.click(clearButton);
+
+    const originalRow = await screen.findByText("Test Title");
+    expect(originalRow).toBeInTheDocument();
+  });
+
+  test("notifies when no matching articles are found", async () => {
+    render(<UserView articles={mockArticles} />);
+
+    const searchInput = screen.getByPlaceholderText("Search articles");
+    userEvent.type(searchInput, "Non-existent Term");
+
+    const searchButton = screen.getByText("Search");
+    userEvent.click(searchButton);
+
+    const noResultsMessage = await screen.findByText("No results found");
+    expect(noResultsMessage).toBeInTheDocument();
   });
 });
