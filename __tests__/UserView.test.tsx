@@ -1,6 +1,6 @@
 // Necessary imports
 import React from "react";
-import { render, waitFor, screen } from "@testing-library/react";
+import { render, waitFor, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import UserView from "../components/UserView";
@@ -20,6 +20,8 @@ describe("UserView Component", () => {
       journal: "Test Journal",
       SE_methods: ["Method 1", "Method 2"],
       claims: ["Claim 1", "Claim 2"],
+      volume: "20",
+      pages: "5",
     },
     {
       _id: "2",
@@ -33,6 +35,8 @@ describe("UserView Component", () => {
       journal: "Test Journal",
       SE_methods: ["Method 3", "Method 4"],
       claims: ["Claim 1", "Claim 2"],
+      volume: "20",
+      pages: "5",
     },
     {
       _id: "3",
@@ -46,6 +50,8 @@ describe("UserView Component", () => {
       journal: "Test Journal",
       SE_methods: ["Method 4", "Method 5"],
       claims: ["Claim 1", "Claim 2"],
+      volume: "20",
+      pages: "5",
     },
   ];
 
@@ -90,5 +96,57 @@ describe("UserView Component", () => {
     await waitFor(() =>
       expect(screen.queryByText(/Claims:/i)).not.toBeInTheDocument()
     );
+  });
+
+  // Test-Driven Development was used here:
+  test("searches and filters articles by title automatically", async () => {
+    render(<UserView articles={mockArticles} />);
+
+    // Find the input field and type the search term
+    const searchInput = screen.getByRole("textbox");
+    userEvent.type(searchInput, "Test Title 2");
+
+    // Wait for the updated table contents to reflect the search term
+    await waitFor(() => {
+      const matchingRow = screen.getByText("Test Title 2");
+      expect(matchingRow).toBeInTheDocument();
+
+      const nonMatchingRow1 = screen.queryByText("Test Title");
+      const nonMatchingRow2 = screen.queryByText("Test Title 3");
+      expect(nonMatchingRow1).not.toBeInTheDocument();
+      expect(nonMatchingRow2).not.toBeInTheDocument();
+    });
+  });
+
+  test("clears the search term and displays original articles", async () => {
+    render(<UserView articles={mockArticles} />);
+
+    // Find the Bootstrap input field and type in it
+    const searchInput = screen.getByRole("textbox");
+    userEvent.type(searchInput, "Test Title 2");
+
+    // Wait for the table to reflect the search term
+    await screen.findByText("Test Title 2");
+
+    // Clear the search input to see if original articles are displayed
+    userEvent.clear(searchInput);
+
+    await waitFor(() => {
+      const originalRow = screen.getByText("Test Title");
+      expect(originalRow).toBeInTheDocument();
+    });
+  });
+
+  test("notifies when no matching articles are found", async () => {
+    render(<UserView articles={mockArticles} />);
+
+    // Find the Bootstrap input field and type a non-existent term
+    const searchInput = screen.getByRole("textbox");
+    userEvent.type(searchInput, "Non-existent Term");
+
+    const regex = /No articles found for/;
+    const noResultsMessage = await screen.findByText(regex);
+
+    expect(noResultsMessage).toBeInTheDocument();
   });
 });

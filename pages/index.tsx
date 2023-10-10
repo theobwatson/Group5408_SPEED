@@ -53,8 +53,8 @@ export default function Home({
   moderatorArticles,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [selectedTab, setSelectedTab] = useState<
-    "user" | "moderator" | "analyst"
-  >("user");
+    "practitioner" | "moderator" | "analyst"
+  >("practitioner");
 
   console.log({ userArticles, analystArticles, moderatorArticles });
 
@@ -88,8 +88,8 @@ export default function Home({
             {showProfileOptions && (
               // on button click, display user profiles
               <div className="profile-options">
-                <button onClick={() => setSelectedTab("user")}>
-                  User View
+                <button onClick={() => setSelectedTab("practitioner")}>
+                  Practitioner View
                 </button>
                 <button onClick={() => setSelectedTab("moderator")}>
                   Moderator View
@@ -105,7 +105,7 @@ export default function Home({
 
       <main>
         {/* Display table, with conditional rendering based on the selected view */}
-        {selectedTab === "user" &&
+        {selectedTab === "practitioner" &&
           (userArticles.length > 0 ? (
             <UserView articles={userArticles} />
           ) : (
@@ -186,6 +186,7 @@ export default function Home({
 
         main {
           padding: 5rem 0;
+          padding-top: 30px;
           flex: 1;
           display: flex;
           flex-direction: column;
