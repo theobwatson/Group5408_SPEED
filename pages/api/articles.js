@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import clientPromise from '../lib/mongodb';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async (req, res) => {
     if (req.method === 'POST') {
