@@ -101,13 +101,15 @@ describe("UserView Component", () => {
     userEvent.type(searchInput, "Test Title 2");
 
     // Wait for the updated table contents to reflect the search term
-    const matchingRow = await screen.findByText("Test Title 2");
-    expect(matchingRow).toBeInTheDocument();
+    await waitFor(() => {
+      const matchingRow = screen.getByText("Test Title 2");
+      expect(matchingRow).toBeInTheDocument();
 
-    const nonMatchingRow1 = screen.queryByText("Test Title");
-    const nonMatchingRow2 = screen.queryByText("Test Title 3");
-    expect(nonMatchingRow1).not.toBeInTheDocument();
-    expect(nonMatchingRow2).not.toBeInTheDocument();
+      const nonMatchingRow1 = screen.queryByText("Test Title");
+      const nonMatchingRow2 = screen.queryByText("Test Title 3");
+      expect(nonMatchingRow1).not.toBeInTheDocument();
+      expect(nonMatchingRow2).not.toBeInTheDocument();
+    });
   });
 
   test("clears the search term and displays original articles", async () => {
@@ -123,8 +125,10 @@ describe("UserView Component", () => {
     // Clear the search input to see if original articles are displayed
     userEvent.clear(searchInput);
 
-    const originalRow = await screen.findByText("Test Title");
-    expect(originalRow).toBeInTheDocument();
+    await waitFor(() => {
+      const originalRow = screen.getByText("Test Title");
+      expect(originalRow).toBeInTheDocument();
+    });
   });
 
   test("notifies when no matching articles are found", async () => {
@@ -134,7 +138,9 @@ describe("UserView Component", () => {
     const searchInput = screen.getByRole("textbox");
     userEvent.type(searchInput, "Non-existent Term");
 
-    const noResultsMessage = await screen.findByText("No results found");
+    const regex = /No articles found for/;
+    const noResultsMessage = await screen.findByText(regex);
+
     expect(noResultsMessage).toBeInTheDocument();
   });
 });
