@@ -2,7 +2,7 @@
 import Head from "next/head";
 import React, { useState } from "react";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import clientPromise from '../lib/mongodb';
+import clientPromise from "../lib/mongodb";
 import UserView from "../components/UserView";
 import AnalystView from "../components/AnalystView";
 import ModeratorView from "../components/ModeratorView";
@@ -189,8 +189,13 @@ export default function Home({
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: flex-start;
-          align-items: flex-start;
+          justify-content: center; /* vertically center */
+          align-items: center; /* horizontally center */
+          width: 100%;
+        }
+
+        main p {
+          text-align: center;
           width: 100%;
         }
 
