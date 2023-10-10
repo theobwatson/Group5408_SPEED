@@ -129,8 +129,8 @@ function ModeratorView({ articles }: Props) {
           id: "action",
           Cell: ({ row }: any) => (
             <>
-              <button onClick={() => handleApprove(row.original._id)}>Approve</button>
-              <button onClick={() => handleReject(row.original._id)}>Reject</button>
+              <button className="btn btn-primary btn-fixed-width mr-2" onClick={() => handleApprove(row.original._id)}>Approve</button>
+              <button className="btn btn-danger btn-fixed-width" onClick={() => handleReject(row.original._id)}>Reject</button>
               
             </>
           ),
