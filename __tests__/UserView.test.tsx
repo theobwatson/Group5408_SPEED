@@ -20,6 +20,8 @@ describe("UserView Component", () => {
       journal: "Test Journal",
       SE_methods: ["Method 1", "Method 2"],
       claims: ["Claim 1", "Claim 2"],
+      volume: "20",
+      pages: "5",
     },
     {
       _id: "2",
@@ -33,6 +35,8 @@ describe("UserView Component", () => {
       journal: "Test Journal",
       SE_methods: ["Method 3", "Method 4"],
       claims: ["Claim 1", "Claim 2"],
+      volume: "20",
+      pages: "5",
     },
     {
       _id: "3",
@@ -46,6 +50,8 @@ describe("UserView Component", () => {
       journal: "Test Journal",
       SE_methods: ["Method 4", "Method 5"],
       claims: ["Claim 1", "Claim 2"],
+      volume: "20",
+      pages: "5",
     },
   ];
 

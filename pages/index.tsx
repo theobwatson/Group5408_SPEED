@@ -186,6 +186,7 @@ export default function Home({
 
         main {
           padding: 5rem 0;
+          padding-top: 30px;
           flex: 1;
           display: flex;
           flex-direction: column;

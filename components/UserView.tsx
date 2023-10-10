@@ -15,6 +15,8 @@ type Article = {
   result: string;
   research_type: string;
   journal: string;
+  volume: string;
+  pages: string;
   SE_methods: string[];
   claims: string[];
 };
@@ -25,7 +27,6 @@ type Props = {
 };
 
 function highlightSearchTerm(text: string, searchTerm: string): JSX.Element {
-  console.log("Highlighting:", text, "with", searchTerm);
   if (!searchTerm || !text) return <>{text}</>;
 
   const regex = new RegExp(`(${searchTerm})`, "gi");
@@ -47,12 +48,22 @@ function highlightSearchTerm(text: string, searchTerm: string): JSX.Element {
   );
 }
 
+function WelcomeMessage() {
+  return (
+    <div className={styles.welcomeMessage}>
+      <h4>Welcome, Practitioner!</h4>
+      <p>
+        Here, you can search and compare articles to make informed decisions on
+        the best practices suited to your circumstances. Dive into the evidence,
+        weigh the claims, and choose methods that resonate most with your
+        objectives.
+      </p>
+    </div>
+  );
+}
+
 function UserView({ articles }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
-
-  React.useEffect(() => {
-    console.log("searchTerm changed to:", searchTerm);
-  }, [searchTerm]);
 
   const filteredArticles = articles.filter((article) => {
     // Create an array of all values from each column
@@ -116,6 +127,20 @@ function UserView({ articles }: Props) {
           ),
         },
         {
+          Header: "Volume",
+          accessor: "volume",
+          Cell: ({ cell: { value } }) => (
+            <div>{highlightSearchTerm(value, searchTerm)}</div>
+          ),
+        },
+        {
+          Header: "Pages",
+          accessor: "pages",
+          Cell: ({ cell: { value } }) => (
+            <div>{highlightSearchTerm(value, searchTerm)}</div>
+          ),
+        },
+        {
           Header: "Result",
           accessor: "result",
           Cell: ({ cell: { value } }) => (
@@ -153,6 +178,7 @@ function UserView({ articles }: Props) {
 
   return (
     <div className={styles.container}>
+      <WelcomeMessage />
       <div className={styles.fixedWidthContainer}>
         <div className={styles["search-bar"]}>
           <input
