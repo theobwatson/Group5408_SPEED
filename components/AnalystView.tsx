@@ -21,22 +21,31 @@ type Props = {
   articles: Article[];
 };
 
+// Highlight the searched term within the provided text.
 function highlightSearchTerm(text: string, searchTerm: string): JSX.Element {
+  // If either the text or the search term is not provided, return the original text
   if (!searchTerm || !text) return <>{text}</>;
 
+  // Create a regular expression based on the search term
+  // 'gi' = global and not case-sensitive matching
   const regex = new RegExp(`(${searchTerm})`, "gi");
+
+  // Split the text into parts based on the search term.
   const parts = text.split(regex);
 
   return (
     <>
       {parts.map((part, index) => {
+        // Check if the current part matches the search term
         if (regex.test(part)) {
           return (
+            // If matched, highlight the search term
             <mark className={styles.highlightedText} key={index}>
               {part}
             </mark>
           );
         }
+        // If not matched, just return the part
         return <span key={index}>{part}</span>;
       })}
     </>
@@ -132,6 +141,7 @@ function AnalystView({ articles }: Props) {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns: columns as Column<Article>[], data: filteredArticles });
 
+  // Display a welcome message tailored for an analyst role
   function WelcomeMessage() {
     return (
       <div className={styles.welcomeMessage}>
