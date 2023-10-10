@@ -1,13 +1,55 @@
+/* Main container with flexible box layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+/* Container with a fixed width */
+.fixedWidthContainer {
+  width: 1440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Styling for the search bar container */
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 450px;
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+/* Styling for error messages */
+.error-message {
+  text-align: center;
+  width: 100%;
+}
+
+/* Highlight styling for search terms */
+.highlightedText {
+  background-color: yellow;
+  color: black;
+}
+
+/* General table styling */
 .table {
   width: 100%;
   border-collapse: collapse;
   padding-left: 20px;
 }
 
+/* Styling for table header row */
 .headerRow {
   background-color: #f2f2f2;
 }
 
+/* Styling for table headers */
 .header {
   padding: 8px;
   text-align: left;
@@ -15,25 +57,35 @@
   width: 175px;
 }
 
+/* Styling for table data cells */
 .tableData {
   padding: 8px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
+/* Hover effect for table rows */
 .row:hover {
   background-color: #f5f5f5;
 }
 
+/* Styling for expanded rows in the table */
 .expandedRow {
   background-color: #f4f4f4;
 }
 
+/* Styling for cells within the expanded rows */
 .expandedCell {
   padding: 10px;
 }
-/* UserView.module.css */
+
+/* Styling for the welcome message for all users */
+.welcomeMessage {
+  align-self: flex-start;
+  text-align: "left";
+  padding-left: 10px;
+}
+
 .btn-fixed-width {
   width: 100px;
 }
-
