@@ -93,15 +93,14 @@ describe("UserView Component", () => {
   });
 
   // Test-Driven Development was used here:
-  test("searches and filters articles by title", async () => {
+  test("searches and filters articles by title automatically", async () => {
     render(<UserView articles={mockArticles} />);
 
-    const searchInput = screen.getByPlaceholderText("Search articles");
+    // Find the input field and type the search term
+    const searchInput = screen.getByRole("textbox");
     userEvent.type(searchInput, "Test Title 2");
 
-    const searchButton = screen.getByText("Search");
-    userEvent.click(searchButton);
-
+    // Wait for the updated table contents to reflect the search term
     const matchingRow = await screen.findByText("Test Title 2");
     expect(matchingRow).toBeInTheDocument();
 
@@ -114,17 +113,15 @@ describe("UserView Component", () => {
   test("clears the search term and displays original articles", async () => {
     render(<UserView articles={mockArticles} />);
 
-    const searchInput = screen.getByPlaceholderText("Search articles");
+    // Find the Bootstrap input field and type in it
+    const searchInput = screen.getByRole("textbox");
     userEvent.type(searchInput, "Test Title 2");
 
-    const searchButton = screen.getByText("Search");
-    userEvent.click(searchButton);
+    // Wait for the table to reflect the search term
+    await screen.findByText("Test Title 2");
 
-    const matchingRow = await screen.findByText("Test Title 2");
-    expect(matchingRow).toBeInTheDocument();
-
-    const clearButton = screen.getByText("Clear");
-    userEvent.click(clearButton);
+    // Clear the search input to see if original articles are displayed
+    userEvent.clear(searchInput);
 
     const originalRow = await screen.findByText("Test Title");
     expect(originalRow).toBeInTheDocument();
@@ -133,11 +130,9 @@ describe("UserView Component", () => {
   test("notifies when no matching articles are found", async () => {
     render(<UserView articles={mockArticles} />);
 
-    const searchInput = screen.getByPlaceholderText("Search articles");
+    // Find the Bootstrap input field and type a non-existent term
+    const searchInput = screen.getByRole("textbox");
     userEvent.type(searchInput, "Non-existent Term");
-
-    const searchButton = screen.getByText("Search");
-    userEvent.click(searchButton);
 
     const noResultsMessage = await screen.findByText("No results found");
     expect(noResultsMessage).toBeInTheDocument();
