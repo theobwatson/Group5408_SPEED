@@ -1,9 +1,12 @@
+import { ObjectId } from 'mongodb';
 import clientPromise from '../lib/mongodb';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
     if (req.method === 'POST') {
-        const articleId = req.body.id;
         const action = req.body.action;
+
+        // Convert string ID to ObjectId
+        const articleId = new ObjectId(req.body.id);
 
         try {
             const client = await clientPromise;

@@ -2,7 +2,7 @@
 import Head from "next/head";
 import React, { useState } from "react";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
-import clientPromise from "../lib/mongodb";
+import clientPromise from '../lib/mongodb';
 import UserView from "../components/UserView";
 import AnalystView from "../components/AnalystView";
 import ModeratorView from "../components/ModeratorView";

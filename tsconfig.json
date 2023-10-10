@@ -13,7 +13,8 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "typeRoots": ["./types", "./node_modules/@types"],
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/api/articles.js", "lib/mongodb.ts"],
   "exclude": ["node_modules"]
