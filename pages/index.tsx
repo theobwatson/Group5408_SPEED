@@ -185,10 +185,10 @@ export default function Home({
         }
 
         main {
-          padding: 5rem 0;
-          padding-top: 30px;
+          padding: 2rem 0;
+          padding-top: 10px !important;
           flex: 1;
-          display: flex;
+
           flex-direction: column;
           justify-content: center; /* vertically center */
           align-items: center; /* horizontally center */
