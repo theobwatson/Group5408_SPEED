@@ -79,6 +79,10 @@ function UserView({ articles }: Props) {
   const [startYear, setStartYear] = useState<number | null>(null);
   const [endYear, setEndYear] = useState<number | null>(null);
 
+  const [sortPreference, setSortPreference] = useState<
+    "mostRecent" | "mostReputable" | null
+  >(null);
+
   const allSEMethods = Array.from(
     new Set(articles.flatMap((article: Article) => article.SE_methods))
   );
@@ -199,9 +203,34 @@ function UserView({ articles }: Props) {
     setExpandedRow(expandedRow === id ? null : id);
   };
 
+  const sortedArticles = filteredArticles.sort((a, b) => {
+    if (sortPreference === "mostRecent") {
+      return (
+        new Date(b.date_published).getTime() -
+        new Date(a.date_published).getTime()
+      );
+    } else if (sortPreference === "mostReputable") {
+      const order = [
+        "Strongly agree",
+        "Agree",
+        "Somewhat agree",
+        "Somewhat disagree",
+        "Disagree",
+        "Strongly disagree",
+      ];
+      return order.indexOf(a.result) - order.indexOf(b.result);
+    } else {
+      // Define the default sort logic when neither button is pressed (e.g., by date).
+      return (
+        new Date(b.date_published).getTime() -
+        new Date(a.date_published).getTime()
+      );
+    }
+  });
+
   // Initialize the table with columns and data
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns: columns as Column<Article>[], data: filteredArticles });
+    useTable({ columns: columns as Column<Article>[], data: sortedArticles });
 
   return (
     <div className={styles.container}>
@@ -253,6 +282,36 @@ function UserView({ articles }: Props) {
             />
           </div>
         </div>
+      </div>
+      <div className={styles.toggleButtonContainer}>
+        <button
+          onClick={() =>
+            setSortPreference((prev) =>
+              prev === "mostRecent" ? null : "mostRecent"
+            )
+          }
+          className={`btn ${
+            sortPreference === "mostRecent"
+              ? "btn-secondary"
+              : "btn-outline-secondary"
+          }`}
+        >
+          Most Recent
+        </button>
+        <button
+          onClick={() =>
+            setSortPreference((prev) =>
+              prev === "mostReputable" ? null : "mostReputable"
+            )
+          }
+          className={`btn ${
+            sortPreference === "mostReputable"
+              ? "btn-secondary"
+              : "btn-outline-secondary"
+          }`}
+        >
+          Most Reputable
+        </button>
       </div>
       {noResults ? (
         <p className={styles["error-message"]}>
