@@ -20,9 +20,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 450px;
+  width: 450px !important;
   margin-bottom: 16px;
   margin-top: 16px;
+  flex-grow: 2;
+  width: auto !important;
+}
+.search-bar .form-control {
+  flex-grow: 2;
+  min-width: 150px;
 }
 
 /* Styling for error messages */
@@ -86,16 +92,12 @@
   padding-left: 10px;
 }
 
-.seMethodSelector {
-  width: 150px;
-  display: inline-block; /* to make sure it doesn't take the full width of its parent */
-}
-
 .searchAndSelectorContainer {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 20px;
+  align-items: center; /* if you want vertically centered items */
+  justify-content: space-between; /* space out main blocks */
+  gap: 20px !important;
+  margin-right: 10px;
 }
 
 .instructionLine {
@@ -107,16 +109,22 @@
 .seMethodSelector {
   margin-right: 10px;
   margin-left: 10px;
-  width: 170px;
+  width: 160px !important;
   display: inline-block;
+  flex-basis: 130px;
+  flex-shrink: 0; /* don't want this to shrink */
+  gap: 20px !important;
 }
 
 .yearSelectorContainer {
   display: flex;
   gap: 10px; /* space between the year input boxes */
+  width: auto;
+  align-items: center;
 }
+
 .form-control {
-  width: 100px;
+  width: auto !important;
 }
 .spacing {
   margin-top: 20px;
@@ -132,4 +140,15 @@
   background-color: #007bff;
   color: white;
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.sortButtonsContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.yearInput {
+  flex-basis: 80px;
+  flex-shrink: 1;
+  width: 140px !important;
 }

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useTable, Column } from "react-table";
 import styles from "./styling/UserView.module.css";
 import "bootstrap/dist/css/bootstrap.css";
+import SearchSort from "./SearchSort";
 
 // Represents article data
 type Article = {
@@ -235,84 +236,19 @@ function UserView({ articles }: Props) {
   return (
     <div className={styles.container}>
       <WelcomeMessage />
-      <div className={styles.searchAndSelectorContainer}>
-        <div className={styles["search-bar"]}>
-          <input
-            type="text"
-            placeholder="Search articles"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="form-control"
-          />
-          <button
-            onClick={() => setSearchTerm("")}
-            disabled={!searchTerm}
-            className="btn btn-primary ml-2"
-          >
-            Clear
-          </button>
-        </div>
-        <div className={styles.instructionLine}>
-          <span>Sort by: </span>
-          <select
-            value={selectedSEMethod}
-            onChange={(e) => setSelectedSEMethod(e.target.value)}
-            className={`form-control ${styles.seMethodSelector}`}
-          >
-            <option>All SE Methods</option>
-            {allSEMethods.map((method) => (
-              <option key={method}>{method}</option>
-            ))}
-          </select>
-          <div className={styles.yearSelectorContainer}>
-            <input
-              type="number"
-              placeholder="From Year"
-              value={startYear || ""}
-              onChange={(e) => setStartYear(Number(e.target.value))}
-              className={`form-control ml-2 ${styles.yearInput}`}
-            />
-            <p>_</p>
-            <input
-              type="number"
-              placeholder="To Year"
-              value={endYear || ""}
-              onChange={(e) => setEndYear(Number(e.target.value))}
-              className={`form-control ml-2 ${styles.yearInput}`}
-            />
-          </div>
-        </div>
-      </div>
-      <div className={styles.toggleButtonContainer}>
-        <button
-          onClick={() =>
-            setSortPreference((prev) =>
-              prev === "mostRecent" ? null : "mostRecent"
-            )
-          }
-          className={`btn ${
-            sortPreference === "mostRecent"
-              ? "btn-secondary"
-              : "btn-outline-secondary"
-          }`}
-        >
-          Most Recent
-        </button>
-        <button
-          onClick={() =>
-            setSortPreference((prev) =>
-              prev === "mostReputable" ? null : "mostReputable"
-            )
-          }
-          className={`btn ${
-            sortPreference === "mostReputable"
-              ? "btn-secondary"
-              : "btn-outline-secondary"
-          }`}
-        >
-          Most Reputable
-        </button>
-      </div>
+      <SearchSort
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        allSEMethods={allSEMethods}
+        selectedSEMethod={selectedSEMethod}
+        setSelectedSEMethod={setSelectedSEMethod}
+        startYear={startYear}
+        setStartYear={setStartYear}
+        endYear={endYear}
+        setEndYear={setEndYear}
+        sortPreference={sortPreference}
+        setSortPreference={setSortPreference}
+      />
       {noResults ? (
         <p className={styles["error-message"]}>
           No articles found for selection.
