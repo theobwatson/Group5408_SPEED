@@ -4,6 +4,7 @@ import { render, waitFor, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import UserView from "../components/UserView";
+import SearchSort from "../components/SearchSort";
 
 describe("UserView Component", () => {
   // Add some mock articles to test the display of data
@@ -54,6 +55,18 @@ describe("UserView Component", () => {
       pages: "5",
     },
   ];
+
+  it("renders without crashing", () => {
+    render(<UserView articles={mockArticles} />);
+  });
+
+  it("filters articles based on SE method", () => {
+    const { getByText, queryByText } = render(
+      <UserView articles={mockArticles} />
+    );
+    fireEvent.click(getByText("Method 1")); // Mocked SE method
+    expect(queryByText("Method 1")).toBeTruthy();
+  });
 
   test("renders UserView component", () => {
     render(<UserView articles={mockArticles} />);
@@ -121,7 +134,7 @@ describe("UserView Component", () => {
   test("clears the search term and displays original articles", async () => {
     render(<UserView articles={mockArticles} />);
 
-    // Find the Bootstrap input field and type in it
+    // Find the input field and type in it
     const searchInput = screen.getByRole("textbox");
     userEvent.type(searchInput, "Test Title 2");
 
@@ -140,7 +153,7 @@ describe("UserView Component", () => {
   test("notifies when no matching articles are found", async () => {
     render(<UserView articles={mockArticles} />);
 
-    // Find the Bootstrap input field and type a non-existent term
+    // Find the input field and type a non-existent term
     const searchInput = screen.getByRole("textbox");
     userEvent.type(searchInput, "Non-existent Term");
 

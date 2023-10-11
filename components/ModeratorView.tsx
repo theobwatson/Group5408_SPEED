@@ -176,7 +176,7 @@ function ModeratorView({ articles }: Props) {
         </div>
         {noResults ? (
           <p className={styles["error-message"]}>
-            No articles found for "{searchTerm}"
+            No articles found for selection.
           </p>
         ) : (
           <table {...getTableProps()} className={styles.table}>

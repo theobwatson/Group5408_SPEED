@@ -134,6 +134,7 @@ export default function Home({
           background-color: #263871;
           padding: 1rem 2rem;
           width: 100%;
+          padding-right: 40px;
         }
 
         .logo {
@@ -193,6 +194,8 @@ export default function Home({
           justify-content: flex-start;
           align-items: flex-start;
           width: 100%;
+          padding-right: 10px;
+          padding-left: 10px;
         }
 
         header nav ul {
