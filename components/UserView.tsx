@@ -76,10 +76,12 @@ function UserView({ articles }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSEMethod, setSelectedSEMethod] = useState("All SE Methods");
 
+  const [startYear, setStartYear] = useState<number | null>(null);
+  const [endYear, setEndYear] = useState<number | null>(null);
+
   const allSEMethods = Array.from(
     new Set(articles.flatMap((article: Article) => article.SE_methods))
   );
-
   const filteredArticles = articles.filter((article) => {
     if (
       selectedSEMethod !== "All SE Methods" &&
@@ -87,8 +89,20 @@ function UserView({ articles }: Props) {
     ) {
       return false;
     }
+
+    const publicationYear = new Date(article.date_published).getFullYear();
+
+    if (startYear && publicationYear < startYear) {
+      return false;
+    }
+
+    if (endYear && publicationYear > endYear) {
+      return false;
+    }
+
     // Create an array of all values from each column
     const allColumnValues = Object.values(article).join(" ").toLowerCase();
+
     // Check if any part of the article contains the search term
     return allColumnValues.includes(searchTerm.toLowerCase());
   });
@@ -217,9 +231,8 @@ function UserView({ articles }: Props) {
             Clear
           </button>
         </div>
-
         <div className={styles.instructionLine}>
-          <span>Sort by a software engineering method: </span>
+          <span>Sort by: </span>
           <select
             value={selectedSEMethod}
             onChange={(e) => setSelectedSEMethod(e.target.value)}
@@ -230,12 +243,28 @@ function UserView({ articles }: Props) {
               <option key={method}>{method}</option>
             ))}
           </select>
+          <div className={styles.yearSelectorContainer}>
+            <input
+              type="number"
+              placeholder="From Year"
+              value={startYear || ""}
+              onChange={(e) => setStartYear(Number(e.target.value))}
+              className={`form-control ml-2 ${styles.yearInput}`}
+            />
+            <p>_</p>
+            <input
+              type="number"
+              placeholder="To Year"
+              value={endYear || ""}
+              onChange={(e) => setEndYear(Number(e.target.value))}
+              className={`form-control ml-2 ${styles.yearInput}`}
+            />
+          </div>
         </div>
       </div>
-
       {noResults ? (
         <p className={styles["error-message"]}>
-          No articles found for "{searchTerm}"
+          No articles found for selection.
         </p>
       ) : (
         <table {...getTableProps()} className={styles.table}>

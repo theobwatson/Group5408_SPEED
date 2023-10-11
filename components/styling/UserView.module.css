@@ -97,3 +97,25 @@
   justify-content: flex-start;
   gap: 20px;
 }
+
+.instructionLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.seMethodSelector {
+  margin-right: 10px;
+  margin-left: 10px;
+  width: 240px;
+  display: inline-block;
+}
+
+.yearSelectorContainer {
+  display: flex;
+  gap: 10px; /* space between the year input boxes */
+}
+
+.form-control {
+  width: 120px; /* Adjust the width of the year input boxes */
+}
