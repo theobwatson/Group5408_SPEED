@@ -176,7 +176,7 @@ function UserView({ articles }: Props) {
           ),
         },
         {
-          Header: "Result",
+          Header: "Strength of Claims",
           accessor: "result",
           Cell: ({ cell: { value } }) => (
             <div>{highlightSearchTerm(value, searchTerm)}</div>
@@ -188,14 +188,6 @@ function UserView({ articles }: Props) {
           Cell: ({ cell: { value } }) => {
             const methodsStr = (value || []).join(", ");
             return <div>{highlightSearchTerm(methodsStr, searchTerm)}</div>;
-          },
-        },
-        {
-          Header: "Number of Claims",
-          accessor: "claims",
-          Cell: ({ cell: { value } }) => {
-            const claimsCount = value ? String(value.length) : "0";
-            return <div>{highlightSearchTerm(claimsCount, searchTerm)}</div>;
           },
         },
       ] as Column<Article>[],
@@ -312,13 +304,13 @@ function UserView({ articles }: Props) {
                       <td colSpan={9} className={styles.expandedCell}>
                         {" "}
                         <ul>
-                          <h4>Claims:</h4>
+                          <h5 className={styles.spacing}>Claims:</h5>
                           {row.original.claims.map((claim, index) => (
                             <li key={index}>{claim}</li>
                           ))}
-                          <h4>Description:</h4>
-                          <p>{row.original.description}</p>
-                          <h4>Evidence Result:</h4>
+                          <h5 className={styles.spacing}>
+                            Analyst Review Result:
+                          </h5>
                           <p>{row.original.result}</p>
                         </ul>
                       </td>

@@ -117,5 +117,9 @@
 }
 
 .form-control {
-  width: 120px; /* Adjust the width of the year input boxes */
+  width: 120px;
+}
+
+.spacing {
+  margin-top: 20px;
 }
