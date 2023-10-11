@@ -71,7 +71,7 @@ const refreshPage = () => {
   window.location.reload();
 };
 
-function hasDuplicateDOI(articles: Article[]): boolean {
+function hasDuplicateDOI(articles: Partial<Article>[]): boolean{
   // Initialize a set to keep track of seen DOIs.
   const seenDOIs = new Set();
   // Iterate through each article in the articles list.
