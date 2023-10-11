@@ -71,25 +71,25 @@ const refreshPage = () => {
   window.location.reload();
 };
 
+function hasDuplicateDOI(articles: Article[]): boolean {
+  // Initialize a set to keep track of seen DOIs.
+  const seenDOIs = new Set();
+  // Iterate through each article in the articles list.
+  for (const article of articles) {
+  
+    // If the DOI of the current article is already in the seenDOIs set, return true.
+    if (seenDOIs.has(article.DOI)) {
+      return true;
+    }
+    // Otherwise, add the DOI of the current article to the seenDOIs set.
+    seenDOIs.add(article.DOI);
+  }
+  // If no duplicates were found, return false.
+  return false;
+};
+
 function ModeratorView({ articles }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const hasDuplicateDOI = () => {
-    // Initialize a set to keep track of seen DOIs.
-    const seenDOIs = new Set();
-    // Iterate through each article in the articles list.
-    for (const article of articles) {
-    
-      // If the DOI of the current article is already in the seenDOIs set, return true.
-      if (seenDOIs.has(article.DOI)) {
-        return true;
-      }
-      // Otherwise, add the DOI of the current article to the seenDOIs set.
-      seenDOIs.add(article.DOI);
-    }
-    // If no duplicates were found, return false.
-    return false;
-  };
 
   const filteredArticles = articles.filter((article) => {
     // Create an array of all values from each column
@@ -295,7 +295,7 @@ function ModeratorView({ articles }: Props) {
           </button>
         </div>
         {/* ADDED: Render a warning if there are duplicate DOIs */}
-        {hasDuplicateDOI() && (
+        {hasDuplicateDOI(articles) && (
                 <p className={styles["error-message"]}>
                     Warning: There are duplicate articles based on DOI!
                 </p>
@@ -347,3 +347,4 @@ function ModeratorView({ articles }: Props) {
 }
 
 export default ModeratorView;
+export { hasDuplicateDOI };
