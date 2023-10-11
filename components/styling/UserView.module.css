@@ -85,3 +85,15 @@
   text-align: "left";
   padding-left: 10px;
 }
+
+.seMethodSelector {
+  width: 250px;
+  display: inline-block; /* to make sure it doesn't take the full width of its parent */
+}
+
+.searchAndSelectorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px;
+}

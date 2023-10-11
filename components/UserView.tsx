@@ -74,8 +74,19 @@ function WelcomeMessage() {
 
 function UserView({ articles }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSEMethod, setSelectedSEMethod] = useState("All SE Methods");
+
+  const allSEMethods = Array.from(
+    new Set(articles.flatMap((article: Article) => article.SE_methods))
+  );
 
   const filteredArticles = articles.filter((article) => {
+    if (
+      selectedSEMethod !== "All SE Methods" &&
+      !article.SE_methods.includes(selectedSEMethod)
+    ) {
+      return false;
+    }
     // Create an array of all values from each column
     const allColumnValues = Object.values(article).join(" ").toLowerCase();
     // Check if any part of the article contains the search term
@@ -189,7 +200,7 @@ function UserView({ articles }: Props) {
   return (
     <div className={styles.container}>
       <WelcomeMessage />
-      <div className={styles.fixedWidthContainer}>
+      <div className={styles.searchAndSelectorContainer}>
         <div className={styles["search-bar"]}>
           <input
             type="text"
@@ -206,78 +217,90 @@ function UserView({ articles }: Props) {
             Clear
           </button>
         </div>
-        {noResults ? (
-          <p className={styles["error-message"]}>
-            No articles found for "{searchTerm}"
-          </p>
-        ) : (
-          <table {...getTableProps()} className={styles.table}>
-            <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr
-                  {...headerGroup.getHeaderGroupProps()}
-                  className={styles.headerRow}
-                >
-                  {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps()} className={styles.header}>
-                      {column.render("Header")}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {rows.map((row) => {
-                prepareRow(row);
-                return (
-                  <React.Fragment key={row.id}>
-                    <tr {...row.getRowProps()} className={styles.row}>
-                      {row.cells.map((cell) => (
-                        <td
-                          {...cell.getCellProps()}
-                          className={styles.tableData}
-                        >
-                          {cell.render("Cell")}
-                        </td>
-                      ))}
-                      <td className={styles.tableData}>
-                        <button
-                          className={`btn ${
-                            expandedRow === row.id
-                              ? "btn-outline-secondary"
-                              : "btn-outline-secondary"
-                          }`}
-                          onClick={() => toggleRow(row.id)}
-                        >
-                          {expandedRow === row.id ? "Show less" : "Show more"}
-                        </button>
+
+        <div className={styles.instructionLine}>
+          <span>Sort by a software engineering method: </span>
+          <select
+            value={selectedSEMethod}
+            onChange={(e) => setSelectedSEMethod(e.target.value)}
+            className={`form-control ${styles.seMethodSelector}`}
+          >
+            <option>All SE Methods</option>
+            {allSEMethods.map((method) => (
+              <option key={method}>{method}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {noResults ? (
+        <p className={styles["error-message"]}>
+          No articles found for "{searchTerm}"
+        </p>
+      ) : (
+        <table {...getTableProps()} className={styles.table}>
+          <thead>
+            {headerGroups.map((headerGroup) => (
+              <tr
+                {...headerGroup.getHeaderGroupProps()}
+                className={styles.headerRow}
+              >
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps()} className={styles.header}>
+                    {column.render("Header")}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <React.Fragment key={row.id}>
+                  <tr {...row.getRowProps()} className={styles.row}>
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps()} className={styles.tableData}>
+                        {cell.render("Cell")}
+                      </td>
+                    ))}
+                    <td className={styles.tableData}>
+                      <button
+                        className={`btn ${
+                          expandedRow === row.id
+                            ? "btn-outline-secondary"
+                            : "btn-outline-secondary"
+                        }`}
+                        onClick={() => toggleRow(row.id)}
+                      >
+                        {expandedRow === row.id ? "Show less" : "Show more"}
+                      </button>
+                    </td>
+                  </tr>
+                  {/* Display additional information for expanded row */}
+                  {expandedRow === row.id && (
+                    <tr className={styles.expandedRow}>
+                      <td colSpan={9} className={styles.expandedCell}>
+                        {" "}
+                        <ul>
+                          <h4>Claims:</h4>
+                          {row.original.claims.map((claim, index) => (
+                            <li key={index}>{claim}</li>
+                          ))}
+                          <h4>Description:</h4>
+                          <p>{row.original.description}</p>
+                          <h4>Evidence Result:</h4>
+                          <p>{row.original.result}</p>
+                        </ul>
                       </td>
                     </tr>
-                    {/* Display additional information for expanded row */}
-                    {expandedRow === row.id && (
-                      <tr className={styles.expandedRow}>
-                        <td colSpan={9} className={styles.expandedCell}>
-                          {" "}
-                          <ul>
-                            <h4>Claims:</h4>
-                            {row.original.claims.map((claim, index) => (
-                              <li key={index}>{claim}</li>
-                            ))}
-                            <h4>Description:</h4>
-                            <p>{row.original.description}</p>
-                            <h4>Evidence Result:</h4>
-                            <p>{row.original.result}</p>
-                          </ul>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
