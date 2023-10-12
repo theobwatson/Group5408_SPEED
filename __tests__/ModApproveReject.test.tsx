@@ -4,6 +4,15 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import ModeratorView from '../components/ModeratorView';
 import fetchMock from 'jest-fetch-mock';
 
+// Before all tests, enable fetch mocks
+beforeAll(() => {
+  fetchMock.enableMocks();
+});
+
+afterEach(() => {
+    fetchMock.resetMocks();
+  });
+
 // Mock data to be used in tests
 const mockArticles = [
   {
@@ -39,6 +48,9 @@ describe('<ModeratorView />', () => {
     const approveButton = getByText('Approve');
     fireEvent.click(approveButton);
 
+    expect(fetch).toHaveBeenCalled();
+    console.log((fetch as jest.MockedFunction<typeof fetch>).mock.calls.length);
+
     // Awaiting the fetch call to complete and asserting that it was called correctly
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1);
@@ -60,6 +72,9 @@ describe('<ModeratorView />', () => {
     // Locating the "Reject" button and simulating a click
     const rejectButton = getByText('Reject');
     fireEvent.click(rejectButton);
+
+    expect(fetch).toHaveBeenCalled();
+    console.log((fetch as jest.MockedFunction<typeof fetch>).mock.calls.length);
 
     // Awaiting the fetch call to complete and asserting that it was called correctly
     await waitFor(() => {
