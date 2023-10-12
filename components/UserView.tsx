@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useTable, Column } from "react-table";
 import styles from "./styling/UserView.module.css";
 import "bootstrap/dist/css/bootstrap.css";
+import SearchSort from "./SearchSort";
 
 // Represents article data
 type Article = {
@@ -74,10 +75,39 @@ function WelcomeMessage() {
 
 function UserView({ articles }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSEMethod, setSelectedSEMethod] = useState("All SE Methods");
 
+  const [startYear, setStartYear] = useState<number | null>(null);
+  const [endYear, setEndYear] = useState<number | null>(null);
+
+  const [sortPreference, setSortPreference] = useState<
+    "mostRecent" | "mostReputable" | null
+  >(null);
+
+  const allSEMethods = Array.from(
+    new Set(articles.flatMap((article: Article) => article.SE_methods))
+  );
   const filteredArticles = articles.filter((article) => {
+    if (
+      selectedSEMethod !== "All SE Methods" &&
+      !article.SE_methods.includes(selectedSEMethod)
+    ) {
+      return false;
+    }
+
+    const publicationYear = new Date(article.date_published).getFullYear();
+
+    if (startYear && publicationYear < startYear) {
+      return false;
+    }
+
+    if (endYear && publicationYear > endYear) {
+      return false;
+    }
+
     // Create an array of all values from each column
     const allColumnValues = Object.values(article).join(" ").toLowerCase();
+
     // Check if any part of the article contains the search term
     return allColumnValues.includes(searchTerm.toLowerCase());
   });
@@ -151,7 +181,7 @@ function UserView({ articles }: Props) {
           ),
         },
         {
-          Header: "Result",
+          Header: "Strength of Claims",
           accessor: "result",
           Cell: ({ cell: { value } }) => (
             <div>{highlightSearchTerm(value, searchTerm)}</div>
@@ -165,14 +195,6 @@ function UserView({ articles }: Props) {
             return <div>{highlightSearchTerm(methodsStr, searchTerm)}</div>;
           },
         },
-        {
-          Header: "Number of Claims",
-          accessor: "claims",
-          Cell: ({ cell: { value } }) => {
-            const claimsCount = value ? String(value.length) : "0";
-            return <div>{highlightSearchTerm(claimsCount, searchTerm)}</div>;
-          },
-        },
       ] as Column<Article>[],
     [searchTerm]
   );
@@ -182,102 +204,119 @@ function UserView({ articles }: Props) {
     setExpandedRow(expandedRow === id ? null : id);
   };
 
+  const sortedArticles = filteredArticles.sort((a, b) => {
+    if (sortPreference === "mostRecent") {
+      return (
+        new Date(b.date_published).getTime() -
+        new Date(a.date_published).getTime()
+      );
+    } else if (sortPreference === "mostReputable") {
+      const order = [
+        "Strongly agree",
+        "Agree",
+        "Somewhat agree",
+        "Somewhat disagree",
+        "Disagree",
+        "Strongly disagree",
+      ];
+      return order.indexOf(a.result) - order.indexOf(b.result);
+    } else {
+      // Define the default sort logic when neither button is pressed (e.g., by date).
+      return (
+        new Date(b.date_published).getTime() -
+        new Date(a.date_published).getTime()
+      );
+    }
+  });
+
   // Initialize the table with columns and data
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns: columns as Column<Article>[], data: filteredArticles });
+    useTable({ columns: columns as Column<Article>[], data: sortedArticles });
 
   return (
     <div className={styles.container}>
       <WelcomeMessage />
-      <div className={styles.fixedWidthContainer}>
-        <div className={styles["search-bar"]}>
-          <input
-            type="text"
-            placeholder="Search articles"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="form-control"
-          />
-          <button
-            onClick={() => setSearchTerm("")}
-            disabled={!searchTerm}
-            className="btn btn-primary ml-2"
-          >
-            Clear
-          </button>
-        </div>
-        {noResults ? (
-          <p className={styles["error-message"]}>
-            No articles found for "{searchTerm}"
-          </p>
-        ) : (
-          <table {...getTableProps()} className={styles.table}>
-            <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr
-                  {...headerGroup.getHeaderGroupProps()}
-                  className={styles.headerRow}
-                >
-                  {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps()} className={styles.header}>
-                      {column.render("Header")}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {rows.map((row) => {
-                prepareRow(row);
-                return (
-                  <React.Fragment key={row.id}>
-                    <tr {...row.getRowProps()} className={styles.row}>
-                      {row.cells.map((cell) => (
-                        <td
-                          {...cell.getCellProps()}
-                          className={styles.tableData}
-                        >
-                          {cell.render("Cell")}
-                        </td>
-                      ))}
-                      <td className={styles.tableData}>
-                        <button
-                          className={`btn ${
-                            expandedRow === row.id
-                              ? "btn-outline-secondary"
-                              : "btn-outline-secondary"
-                          }`}
-                          onClick={() => toggleRow(row.id)}
-                        >
-                          {expandedRow === row.id ? "Show less" : "Show more"}
-                        </button>
+      <SearchSort
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        allSEMethods={allSEMethods}
+        selectedSEMethod={selectedSEMethod}
+        setSelectedSEMethod={setSelectedSEMethod}
+        startYear={startYear}
+        setStartYear={setStartYear}
+        endYear={endYear}
+        setEndYear={setEndYear}
+        sortPreference={sortPreference}
+        setSortPreference={setSortPreference}
+      />
+      {noResults ? (
+        <p className={styles["error-message"]}>
+          No articles found for selection.
+        </p>
+      ) : (
+        <table {...getTableProps()} className={styles.table}>
+          <thead>
+            {headerGroups.map((headerGroup) => (
+              <tr
+                {...headerGroup.getHeaderGroupProps()}
+                className={styles.headerRow}
+              >
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps()} className={styles.header}>
+                    {column.render("Header")}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <React.Fragment key={row.id}>
+                  <tr {...row.getRowProps()} className={styles.row}>
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps()} className={styles.tableData}>
+                        {cell.render("Cell")}
+                      </td>
+                    ))}
+                    <td className={styles.tableData}>
+                      <button
+                        className={`btn ${
+                          expandedRow === row.id
+                            ? "btn-outline-secondary"
+                            : "btn-outline-secondary"
+                        }`}
+                        onClick={() => toggleRow(row.id)}
+                      >
+                        {expandedRow === row.id ? "Show less" : "Show more"}
+                      </button>
+                    </td>
+                  </tr>
+                  {/* Display additional information for expanded row */}
+                  {expandedRow === row.id && (
+                    <tr className={styles.expandedRow}>
+                      <td colSpan={9} className={styles.expandedCell}>
+                        {" "}
+                        <ul>
+                          <h5 className={styles.spacing}>Claims:</h5>
+                          {row.original.claims.map((claim, index) => (
+                            <li key={index}>{claim}</li>
+                          ))}
+                          <h5 className={styles.spacing}>
+                            Analyst Review Result:
+                          </h5>
+                          <p>{row.original.result}</p>
+                        </ul>
                       </td>
                     </tr>
-                    {/* Display additional information for expanded row */}
-                    {expandedRow === row.id && (
-                      <tr className={styles.expandedRow}>
-                        <td colSpan={9} className={styles.expandedCell}>
-                          {" "}
-                          <ul>
-                            <h4>Claims:</h4>
-                            {row.original.claims.map((claim, index) => (
-                              <li key={index}>{claim}</li>
-                            ))}
-                            <h4>Description:</h4>
-                            <p>{row.original.description}</p>
-                            <h4>Evidence Result:</h4>
-                            <p>{row.original.result}</p>
-                          </ul>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

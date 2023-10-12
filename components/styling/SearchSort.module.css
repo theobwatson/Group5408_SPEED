@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.searchBar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex: 1;
+  width: 150px;
+}
+
+.seMethodSelector {
+  width: 200px;
+}
+
+.yearInput {
+  width: 130px;
+}
+
+.searchAndSelectorContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-bar,
+.dropdownContainer,
+.yearSelectorContainer,
+.toggleButtonContainer {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 10px;
+}
