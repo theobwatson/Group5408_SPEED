@@ -1,15 +1,11 @@
 {
   "private": true,
-  "resolutions": {
-    "glob-parent": "^5.1.2"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "jest",
-    "preinstall": "npx npm-force-resolutions"
-  },
+    "test": "jest"
+    },
   "dependencies": {
     "@nextui-org/react": "^2.1.13",
     "bcrypt": "^5.1.1",
