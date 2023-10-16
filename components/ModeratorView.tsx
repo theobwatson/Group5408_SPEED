@@ -5,7 +5,7 @@ import styles from "./styling/UserView.module.css";
 import "bootstrap/dist/css/bootstrap.css";
 
 // Represents article data
-type Article = {
+export type Article = {
   _id: string;
   title: string;
   author: string;
@@ -71,11 +71,11 @@ const refreshPage = () => {
   window.location.reload();
 };
 
-function hasDuplicateDOI(articles: Partial<Article>[]): boolean{
+function hasDuplicateDOI(prevArticles: Article[]): boolean{
   // Initialize a set to keep track of seen DOIs.
   const seenDOIs = new Set();
   // Iterate through each article in the articles list.
-  for (const article of articles) {
+  for (const article of prevArticles) {
   
     // If the DOI of the current article is already in the seenDOIs set, return true.
     if (seenDOIs.has(article.DOI)) {
@@ -104,74 +104,66 @@ function ModeratorView({ articles }: Props) {
   // Maintain a state to track if the API request is in progress
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const [articleList, setArticleList] = useState(articles);
+
   const handleApprove = async (articleId: string) => {
-    const newQueueValue = "analyst"; // Defined the queue value for clarity
-    if (!articleId || !newQueueValue) {
-      return console.error("Error: Missing articleId or queue value");
-    }
-
+    const newQueueValue = "analyst";
+  
     try {
       setIsLoading(true);
       const response = await fetch("/api/updateArticle", {
-        // Updated endpoint to singular
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articleId, newQueueValue }), // Sending the new variable name
+        body: JSON.stringify({ articleId, newQueueValue }),
       });
-
+  
       if (response.ok) {
-        refreshPage();
-      }
-      if (!response.ok) {
+        // Update the local state to remove the approved article
+        setArticleList((prevArticles: Article[]) =>
+          prevArticles.filter((article) => article._id !== articleId)
+        );
+      } else {
         const errorData = await response.json();
         throw new Error(errorData.error);
       }
-
+  
       setIsLoading(false);
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error updating article:", error.message);
-      } else {
-        console.error("Error updating article:", error);
-      }
+      // Handle errors
+      console.error("Error updating article:", error);
       setIsLoading(false);
     }
   };
-
+  
   const handleReject = async (articleId: string) => {
-    const newQueueValue = "rejected"; // Defined the queue value for clarity
-    if (!articleId || !newQueueValue) {
-      return console.error("Error: Missing articleId or queue value");
-    }
-
+    const newQueueValue = "rejected";
+  
     try {
       setIsLoading(true);
       const response = await fetch("/api/updateArticle", {
-        // Updated endpoint to singular
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ articleId, newQueueValue }), // Sending the new variable name
+        body: JSON.stringify({ articleId, newQueueValue }),
       });
-
+  
       if (response.ok) {
-        refreshPage();
-      }
-      if (!response.ok) {
+        // Update the local state to remove the rejected article
+        setArticleList((prevArticles: Article[]) =>
+          prevArticles.filter((article) => article._id !== articleId)
+        );
+      } else {
         const errorData = await response.json();
         throw new Error(errorData.error);
       }
-
+  
       setIsLoading(false);
     } catch (error) {
-      if (error instanceof Error) {
-        console.error("Error updating article:", error.message);
-      } else {
-        console.error("Error updating article:", error);
-      }
+      // Handle errors
+      console.error("Error updating article:", error);
       setIsLoading(false);
     }
   };
-
+  
   // Construct columns for react-table
   const columns = React.useMemo(
     () =>
@@ -245,6 +237,13 @@ function ModeratorView({ articles }: Props) {
           id: "action",
           Cell: ({ row }: any) => (
             <>
+            <button
+              className="btn btn-primary ml-2"
+              data-testid="refresh-button"
+              onClick={refreshPage}
+             >
+               Refresh
+             </button>
               <button
                 className="btn btn-success btn-fixed-width mr-2"
                 style={{ marginBottom: "6px" }}
@@ -265,6 +264,7 @@ function ModeratorView({ articles }: Props) {
     [searchTerm]
   );
 
+
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const toggleRow = (id: string) => {
     setExpandedRow(expandedRow === id ? null : id);
@@ -281,7 +281,7 @@ function ModeratorView({ articles }: Props) {
         <div className={styles["search-bar"]}>
           <input
             type="text"
-            placeholder="Search articles"
+            placeholder="Search by Title, Author, or DOI"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="form-control"

@@ -1,7 +1,7 @@
 // Importing necessary libraries and components
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import ModeratorView from '../components/ModeratorView';
+import ModeratorView from '../components/ModeratorView'; // Import your ModeratorView component
 import fetchMock from 'jest-fetch-mock';
 
 // Before all tests, enable fetch mocks
@@ -10,8 +10,9 @@ beforeAll(() => {
 });
 
 afterEach(() => {
-    fetchMock.resetMocks();
-  });
+  fetchMock.resetMocks();
+  jest.clearAllMocks();
+});
 
 // Mock data to be used in tests
 const mockArticles = [
@@ -25,12 +26,13 @@ const mockArticles = [
     volume: "1",
     pages: "10-15",
     inSearchersDb: false,
-    inRejectedDb: false
+    inRejectedDb: false,
   },
 ];
 
 // Grouping tests related to the ModeratorView component
 describe('<ModeratorView />', () => {
+
   // Before each test, reset all mocks to ensure a clean state
   beforeEach(() => {
     fetchMock.resetMocks();
@@ -48,6 +50,7 @@ describe('<ModeratorView />', () => {
     const approveButton = getByText('Approve');
     fireEvent.click(approveButton);
 
+    // Assert that fetch was called
     expect(fetch).toHaveBeenCalled();
     console.log((fetch as jest.MockedFunction<typeof fetch>).mock.calls.length);
 
@@ -73,6 +76,7 @@ describe('<ModeratorView />', () => {
     const rejectButton = getByText('Reject');
     fireEvent.click(rejectButton);
 
+    // Assert that fetch was called
     expect(fetch).toHaveBeenCalled();
     console.log((fetch as jest.MockedFunction<typeof fetch>).mock.calls.length);
 
@@ -86,4 +90,18 @@ describe('<ModeratorView />', () => {
     });
   });
 
+  // Test for refreshPage
+it('tests refreshPage', async () => {
+  // Rendering the ModeratorView component with mock data
+  const { getByTestId } = render(<ModeratorView articles={mockArticles} />);
+
+  // Locating the refresh button using data-testid
+  const refreshButton = getByTestId('refresh-button');
+
+  // Simulate an action on the element
+  fireEvent.click(refreshButton);
+
+  // Check if the mocked window.location.reload() was called
+  expect(window.location.reload).toHaveBeenCalled();
+});
 });
