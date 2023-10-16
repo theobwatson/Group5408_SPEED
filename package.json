@@ -57,5 +57,8 @@
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"
     ]
+  },
+  "resolutions": {
+    "fsevents": "2.3.3"
   }
 }
