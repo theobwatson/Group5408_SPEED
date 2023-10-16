@@ -7,6 +7,7 @@ import UserView from "../components/UserView";
 import AnalystView from "../components/AnalystView";
 import ModeratorView from "../components/ModeratorView";
 import "bootstrap/dist/css/bootstrap.css";
+import SubmitArticle from "../components/SubmitArticle";
 
 // Fetching data from the server-side (MongoDB)
 export const getServerSideProps: GetServerSideProps = async () => {
@@ -27,12 +28,17 @@ export const getServerSideProps: GetServerSideProps = async () => {
       .collection("articles")
       .find({ queue: "moderator" })
       .toArray();
+      const submitArticles = await db
+      .collection("articles")
+      .find({ queue: "moderator" })
+      .toArray();
 
     return {
       props: {
         userArticles: JSON.parse(JSON.stringify(userArticles)),
         analystArticles: JSON.parse(JSON.stringify(analystArticles)),
         moderatorArticles: JSON.parse(JSON.stringify(moderatorArticles)),
+        submitArticles: JSON.parse(JSON.stringify(submitArticles)),
       },
     };
   } catch (e) {
@@ -42,6 +48,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         userArticles: [],
         analystArticles: [],
         moderatorArticles: [],
+        submitArticles: [],
       },
     };
   }
@@ -51,14 +58,17 @@ export default function Home({
   userArticles,
   analystArticles,
   moderatorArticles,
+  submitArticles,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [selectedTab, setSelectedTab] = useState<
     "user" | "moderator" | "analyst"
   >("user");
+  const [clickedButton, setClickedButton] = useState("clicked")
 
-  console.log({ userArticles, analystArticles, moderatorArticles });
+  console.log({ userArticles, analystArticles, moderatorArticles, submitArticles});
 
   const [showProfileOptions, setShowProfileOptions] = useState(false);
+  const [submitButton, setSubmitButton] = useState(false);
 
   return (
     <div className="container-fluid">
@@ -75,9 +85,14 @@ export default function Home({
         <div className="logo">SPEED</div> {/* Display the logo */}
         <div className="controls">
           {/* Controls for submitting articles and user profile */}
-          <button className="btn btn-light rounded-pill">
-            Submit an Article
-          </button>
+          <div className="SubmitButton">
+            <button 
+              className="btn btn-light rounded-pill"
+              onClick={() => setSubmitButton(!submitButton)}
+            >
+              Submit an Article
+            </button>
+          </div>
           <div className="profile">
             <button
               className="btn btn-light rounded-pill"
@@ -105,6 +120,11 @@ export default function Home({
 
       <main>
         {/* Display table, with conditional rendering based on the selected view */}
+        {clickedButton === "clicked" &&
+          (submitArticles.lenght > 0 ? (<SubmitArticle articles={submitArticles}/>
+          ) : (
+            <p></p>
+          ))}
         {selectedTab === "user" &&
           (userArticles.length > 0 ? (
             <UserView articles={userArticles} />
