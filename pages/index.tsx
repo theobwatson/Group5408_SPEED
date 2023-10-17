@@ -27,12 +27,17 @@ export const getServerSideProps: GetServerSideProps = async () => {
       .collection("articles")
       .find({ queue: "moderator" })
       .toArray();
+    const rejectedArticles = await db
+      .collection("articles")
+      .find({ queue: "rejected" })
+      .toArray();
 
     return {
       props: {
         userArticles: JSON.parse(JSON.stringify(userArticles)),
         analystArticles: JSON.parse(JSON.stringify(analystArticles)),
         moderatorArticles: JSON.parse(JSON.stringify(moderatorArticles)),
+        rejectedArticles: JSON.parse(JSON.stringify(rejectedArticles)),
       },
     };
   } catch (e) {
@@ -42,6 +47,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         userArticles: [],
         analystArticles: [],
         moderatorArticles: [],
+        rejectedArticles: [],
       },
     };
   }
@@ -51,12 +57,11 @@ export default function Home({
   userArticles,
   analystArticles,
   moderatorArticles,
+  rejectedArticles,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [selectedTab, setSelectedTab] = useState<
     "practitioner" | "moderator" | "analyst"
   >("practitioner");
-
-  console.log({ userArticles, analystArticles, moderatorArticles });
 
   const [showProfileOptions, setShowProfileOptions] = useState(false);
 
@@ -119,7 +124,11 @@ export default function Home({
           ))}
         {selectedTab === "moderator" &&
           (moderatorArticles.length > 0 ? (
-            <ModeratorView articles={moderatorArticles} />
+            <ModeratorView
+              articles={moderatorArticles}
+              userArticles={userArticles}
+              rejectedArticles={rejectedArticles}
+            />
           ) : (
             <p>No Articles Available for Review</p>
           ))}

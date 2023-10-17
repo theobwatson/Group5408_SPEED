@@ -21,6 +21,8 @@ type Article = {
 // Props for passing in a list of articles
 type Props = {
   articles: Article[];
+  userArticles: Article[]; // to check duplicate
+  rejectedArticles: Article[]; // to check rejected
 };
 
 // Highlight the searched term within the provided text.
@@ -71,7 +73,7 @@ const refreshPage = () => {
   window.location.reload();
 };
 
-function ModeratorView({ articles }: Props) {
+function ModeratorView({ articles, userArticles, rejectedArticles }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredArticles = articles.filter((article) => {
@@ -215,13 +217,21 @@ function ModeratorView({ articles }: Props) {
         },
         {
           Header: "Found in SPEED?",
-          accessor: "inSearchersDb",
-          Cell: ({ cell: { value } }) => (value ? "Yes" : "No"),
+          id: "inSearchersDb",
+          Cell: ({ row }: any) =>
+            userArticles.some((article) => article.title === row.original.title)
+              ? "Yes"
+              : "No",
         },
         {
           Header: "Previously Rejected?",
-          accessor: "inRejectedDb",
-          Cell: ({ cell: { value } }) => (value ? "Yes" : "No"),
+          id: "inRejectedDb",
+          Cell: ({ row }: any) =>
+            rejectedArticles.some(
+              (article) => article.title === row.original.title
+            )
+              ? "Yes"
+              : "No",
         },
         {
           Header: "Action",
