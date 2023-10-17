@@ -27,12 +27,17 @@ export const getServerSideProps: GetServerSideProps = async () => {
       .collection("articles")
       .find({ queue: "moderator" })
       .toArray();
+    const rejectedArticles = await db
+      .collection("articles")
+      .find({ queue: "rejected" })
+      .toArray();
 
     return {
       props: {
         userArticles: JSON.parse(JSON.stringify(userArticles)),
         analystArticles: JSON.parse(JSON.stringify(analystArticles)),
         moderatorArticles: JSON.parse(JSON.stringify(moderatorArticles)),
+        rejectedArticles: JSON.parse(JSON.stringify(rejectedArticles)),
       },
     };
   } catch (e) {
@@ -42,6 +47,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         userArticles: [],
         analystArticles: [],
         moderatorArticles: [],
+        rejectedArticles: [],
       },
     };
   }
@@ -51,12 +57,11 @@ export default function Home({
   userArticles,
   analystArticles,
   moderatorArticles,
+  rejectedArticles,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [selectedTab, setSelectedTab] = useState<
     "practitioner" | "moderator" | "analyst"
   >("practitioner");
-
-  console.log({ userArticles, analystArticles, moderatorArticles });
 
   const [showProfileOptions, setShowProfileOptions] = useState(false);
 
@@ -119,7 +124,11 @@ export default function Home({
           ))}
         {selectedTab === "moderator" &&
           (moderatorArticles.length > 0 ? (
-            <ModeratorView articles={moderatorArticles} />
+            <ModeratorView
+              articles={moderatorArticles}
+              userArticles={userArticles}
+              rejectedArticles={rejectedArticles}
+            />
           ) : (
             <p>No Articles Available for Review</p>
           ))}
@@ -186,13 +195,18 @@ export default function Home({
         }
 
         main {
-          padding: 5rem 0;
-          padding-top: 30px;
+          padding: 2rem 0;
+          padding-top: 10px !important;
           flex: 1;
-          display: flex;
+
           flex-direction: column;
-          justify-content: flex-start;
-          align-items: flex-start;
+          justify-content: center; /* vertically center */
+          align-items: center; /* horizontally center */
+          width: 100%;
+        }
+
+        main p {
+          text-align: center;
           width: 100%;
           padding-right: 10px;
           padding-left: 10px;

@@ -14,11 +14,15 @@ type Article = {
   journal: string;
   volume: string;
   pages: string;
+  inSearchersDb: boolean; // Indicate if article is in the searchers database
+  inRejectedDb: boolean; // Indicate if article is in the rejected database
 };
 
 // Props for passing in a list of articles
 type Props = {
   articles: Article[];
+  userArticles: Article[]; // to check duplicate
+  rejectedArticles: Article[]; // to check rejected
 };
 
 // Highlight the searched term within the provided text.
@@ -65,7 +69,13 @@ function WelcomeMessage() {
   );
 }
 
-function ModeratorView({ articles }: Props) {
+const refreshPage = () => {
+  if (process.env.NODE_ENV !== "test") {
+    window.location.reload();
+  }
+};
+
+function ModeratorView({ articles, userArticles, rejectedArticles }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredArticles = articles.filter((article) => {
@@ -77,6 +87,77 @@ function ModeratorView({ articles }: Props) {
 
   // Check if there are no results
   const noResults = filteredArticles.length === 0;
+
+  // Maintain a state to track if the API request is in progress
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleApprove = async (articleId: string) => {
+    const newQueueValue = "analyst"; // Defined the queue value for clarity
+    if (!articleId || !newQueueValue) {
+      return console.error("Error: Missing articleId or queue value");
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/updateArticle", {
+        // Updated endpoint to singular
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articleId, newQueueValue }), // Sending the new variable name
+      });
+
+      if (response.ok) {
+        refreshPage();
+      }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error updating article:", error.message);
+      } else {
+        console.error("Error updating article:", error);
+      }
+      setIsLoading(false);
+    }
+  };
+
+  const handleReject = async (articleId: string) => {
+    const newQueueValue = "rejected"; // Defined the queue value for clarity
+    if (!articleId || !newQueueValue) {
+      return console.error("Error: Missing articleId or queue value");
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/updateArticle", {
+        // Updated endpoint to singular
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articleId, newQueueValue }), // Sending the new variable name
+      });
+
+      if (response.ok) {
+        refreshPage();
+      }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+      }
+
+      setIsLoading(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error updating article:", error.message);
+      } else {
+        console.error("Error updating article:", error);
+      }
+      setIsLoading(false);
+    }
+  };
 
   // Construct columns for react-table
   const columns = React.useMemo(
@@ -137,9 +218,43 @@ function ModeratorView({ articles }: Props) {
           ),
         },
         {
+          Header: "Found in SPEED?",
+          id: "inSearchersDb",
+          Cell: ({ row }: any) =>
+            userArticles.some((article) => article.title === row.original.title)
+              ? "Yes"
+              : "No",
+        },
+        {
+          Header: "Previously Rejected?",
+          id: "inRejectedDb",
+          Cell: ({ row }: any) =>
+            rejectedArticles.some(
+              (article) => article.title === row.original.title
+            )
+              ? "Yes"
+              : "No",
+        },
+        {
           Header: "Action",
           id: "action",
-          Cell: () => <button>Some Action</button>,
+          Cell: ({ row }: any) => (
+            <>
+              <button
+                className="btn btn-success btn-fixed-width mr-2"
+                style={{ marginBottom: "6px" }}
+                onClick={() => handleApprove(row.original._id)}
+              >
+                Approve
+              </button>
+              <button
+                className="btn btn-danger btn-fixed-width"
+                onClick={() => handleReject(row.original._id)}
+              >
+                Reject
+              </button>
+            </>
+          ),
         } as any,
       ] as Column<Article>[],
     [searchTerm]
@@ -208,18 +323,6 @@ function ModeratorView({ articles }: Props) {
                           {cell.render("Cell")}
                         </td>
                       ))}
-                      <td className={styles.tableData}>
-                        <button
-                          className={`btn ${
-                            expandedRow === row.id
-                              ? "btn-outline-secondary"
-                              : "btn-outline-secondary"
-                          }`}
-                          onClick={() => toggleRow(row.id)}
-                        >
-                          {expandedRow === row.id ? "Show less" : "Show more"}
-                        </button>
-                      </td>
                     </tr>
                   </React.Fragment>
                 );
