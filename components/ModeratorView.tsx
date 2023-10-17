@@ -70,7 +70,9 @@ function WelcomeMessage() {
 }
 
 const refreshPage = () => {
-  window.location.reload();
+  if (process.env.NODE_ENV !== "test") {
+    window.location.reload();
+  }
 };
 
 function ModeratorView({ articles, userArticles, rejectedArticles }: Props) {
