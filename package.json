@@ -4,7 +4,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "jest"
+    "test": "jest",
+    "preinstall": "npx npm-force-resolutions"
   },
   "dependencies": {
     "@nextui-org/react": "^2.1.13",
@@ -60,5 +61,9 @@
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"
     ]
+  },
+  "resolutions": {
+    "fsevents": "2.3.3",
+    "glob-watcher": "6.0.0"
   }
 }
